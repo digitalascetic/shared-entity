@@ -7,10 +7,21 @@ use JMS\Serializer\Annotation\Type;
 
 /**
  * Class BaseSharedEntity
- * @package DigitalAscetic\SharedEntityBundle\Entity\Base\SharedEntity
+ * @package DigitalAscetic\SharedEntityBundle\Entity
  */
 abstract class BaseSharedEntity implements SharedEntity
 {
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @Groups({"id"})
+     * @Type("integer")
+     */
+    protected $id;
 
     /**
      * @var Source
@@ -27,6 +38,14 @@ abstract class BaseSharedEntity implements SharedEntity
     public function __construct(Source $entitySource = null)
     {
         $this->source = $entitySource;
+    }
+
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
     }
 
     /**

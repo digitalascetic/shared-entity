@@ -28,7 +28,7 @@ class DigitalAsceticSharedEntityExtension extends Extension implements PrependEx
             // SharedService
             $sharedEntityServ = new Definition(SharedEntityService::class);
             $sharedEntityServ->addArgument(new Reference('doctrine.orm.entity_manager'));
-            $sharedEntityServ->addArgument($config['default_origin']);
+            $sharedEntityServ->addArgument($config['origin']);
             $sharedEntityServ->setPublic(true);
             $container->setDefinition('digital_ascetic.shared_entity_service', $sharedEntityServ);
 
@@ -38,7 +38,7 @@ class DigitalAsceticSharedEntityExtension extends Extension implements PrependEx
               SharedEntitySubscriber::class
             );
             $sharedEntitySub->addArgument(new Reference('service_container'));
-            $sharedEntitySub->addArgument($config['default_origin']);
+            $sharedEntitySub->addArgument($config['origin']);
             $sharedEntitySub->addTag(
               'kernel.event_listener',
               array('event' => 'digital_ascetic.shared.entity.persist', 'method' => 'onSharedEntityPersist')
