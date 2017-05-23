@@ -77,6 +77,7 @@ class SharedEntityDoctrineSubscriber implements EventSubscriber
      */
     public function postPersist(LifecycleEventArgs $args)
     {
+
         /** @var SharedEntity $entity */
         $entity = $args->getEntity();
 

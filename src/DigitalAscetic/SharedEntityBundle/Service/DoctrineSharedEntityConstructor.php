@@ -35,6 +35,7 @@ class DoctrineSharedEntityConstructor implements ObjectConstructorInterface
      * @param ManagerRegistry $managerRegistry
      * @param ObjectConstructorInterface $fallbackConstructor
      * @param SharedEntityService $sharedEntityService
+     * @param LoggerInterface $logger
      */
     public function __construct(
       ManagerRegistry $managerRegistry,
@@ -77,10 +78,8 @@ class DoctrineSharedEntityConstructor implements ObjectConstructorInterface
             return $this->fallbackConstructor->construct($visitor, $metadata, $data, $type, $context);
         }
 
-        $clazz = new \ReflectionClass($metadata->name);
-
         // If it's a managed class and also a SharedEntity follow a special object construction flow
-        if ($clazz->implementsInterface(SharedEntity::class)) {
+        if ($metadata->reflection->implementsInterface(SharedEntity::class)) {
 
             // Just handle entities coming from different origins (otherwise we already have the id)
             if (isset($data['source'])
@@ -98,7 +97,7 @@ class DoctrineSharedEntityConstructor implements ObjectConstructorInterface
                 // If an actual entity could be found initialize and return it
                 if ($object) {
 
-                    $this->logger->info('Found existing shared entity with source '.$object->getSource());
+                    $this->logger->info('Updating existing shared entity with source '.$object->getSource());
                     $objectManager->initializeObject($object);
 
                     return $object;

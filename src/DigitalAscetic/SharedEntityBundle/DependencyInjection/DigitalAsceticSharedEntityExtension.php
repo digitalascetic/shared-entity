@@ -48,7 +48,7 @@ class DigitalAsceticSharedEntityExtension extends Extension implements PrependEx
               $sharedEntitySub
             );
 
-
+            
             // SharedEntity Doctrine Subscriber, handles SharedEntity events on Doctrine
             // SharedEntity events
             $sharedEntityDctr = new Definition(
