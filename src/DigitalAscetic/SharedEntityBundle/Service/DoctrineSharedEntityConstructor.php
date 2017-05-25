@@ -7,6 +7,7 @@ use DigitalAscetic\SharedEntityBundle\Entity\Source;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use JMS\Serializer\Construction\ObjectConstructorInterface;
 use JMS\Serializer\DeserializationContext;
+use JMS\Serializer\Exception\RuntimeException;
 use JMS\Serializer\Metadata\ClassMetadata;
 use JMS\Serializer\VisitorInterface;
 use Psr\Log\LoggerInterface;
@@ -134,6 +135,15 @@ class DoctrineSharedEntityConstructor implements ObjectConstructorInterface
 
         // Entity update, load it from database
         $object = $objectManager->find($metadata->name, $identifierList);
+
+        if (!$object) {
+            throw new RuntimeException(
+              "Cannot find an entity of type ".$type['name'].' with identifiers: ['.join(
+                ',',
+                $identifierList
+              ).']. Possibly sharing entity that do not implements SharedEntity interface or missing source infos.'
+            );
+        }
 
         $objectManager->initializeObject($object);
 

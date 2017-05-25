@@ -1,5 +1,11 @@
 # CHANGELOG
 
+1.0.4
+-----
+
+ * Handled case where an entity is shared without ```Source``` but with an id by throwing proper exception
+
+
 1.0.1
 -----
 
