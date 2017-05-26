@@ -29,6 +29,7 @@ abstract class BaseSharedEntity implements SharedEntity
      *
      * @ORM\Embedded(class = "DigitalAscetic\SharedEntityBundle\Entity\Source")
      * @Type("DigitalAscetic\SharedEntityBundle\Entity\Source")
+     * @Groups({"shared_entity"})
      */
     protected $source;
 

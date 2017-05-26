@@ -10,6 +10,7 @@ namespace DigitalAscetic\SharedEntityBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Type;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * Class Source
@@ -24,6 +25,7 @@ class Source
      *
      * @ORM\Column(name="origin", type="string", length=255, nullable=true)
      * @Type("string")
+     * @Groups({"shared_entity"})
      */
     private $origin;
 
@@ -32,6 +34,7 @@ class Source
      *
      * @ORM\Column(name="id", type="string", length=255, nullable=true)
      * @Type("string")
+     * @Groups({"shared_entity"})
      */
     private $id;
 
