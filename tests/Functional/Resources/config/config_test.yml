@@ -8,7 +8,7 @@ framework:
 
 digital_ascetic_shared_entity:
     enabled: true
-    default_origin: "test-origin"
+    origin: "test-origin"
 
 doctrine:
     dbal:
