@@ -83,16 +83,15 @@ class DoctrineSharedEntityConstructor implements ObjectConstructorInterface
         if ($metadata->reflection->implementsInterface(SharedEntity::class)) {
 
             // Just handle entities coming from different origins (otherwise we already have the id)
-            if (isset($data['source'])
-              && isset($data['source']['origin'])
-              && $data['source']['origin'] !== $this->sharedEntityService->getOrigin()
-              && isset($data['source']['id'])
+            if ($this->hasSourceData($data)) {
 
-            ) {
+                // origin might be absent for globally shared entities
+                $origin = isset($data['source']['origin']) ? $data['source']['origin'] : null;
+
                 // See if the shared entity is already in local db
                 $object = $this->sharedEntityService->getEntityFromSource(
                   $metadata->name,
-                  new Source($data['source']['origin'], $data['source']['id'])
+                  new Source($origin, $data['source']['id'])
                 );
 
                 // If an actual entity could be found initialize and return it
@@ -148,5 +147,20 @@ class DoctrineSharedEntityConstructor implements ObjectConstructorInterface
         $objectManager->initializeObject($object);
 
         return $object;
+    }
+
+    private function hasSourceData($data)
+    {
+
+        if (!isset($data['source']) || !isset($data['source']['id'])) {
+            return false;
+        }
+
+        if (isset($data['source']['origin']) && $data['source']['origin'] === $this->sharedEntityService->getOrigin()) {
+            return false;
+        }
+
+        return true;
+
     }
 }
