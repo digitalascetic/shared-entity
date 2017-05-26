@@ -1,5 +1,11 @@
 # CHANGELOG
 
+1.0.5
+-----
+ 
+ * Handle deserialization of "globally shared" ```SharedEntity``` represented by a ```null``` origin.
+ * Added serialization group to ```Source``` properties to allow selective (de)serialization
+
 1.0.4
 -----
 
