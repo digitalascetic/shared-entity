@@ -163,6 +163,45 @@ class SharedEntityFunctionalTest extends KernelTestCase
 
     }
 
+    public function testDeserializeLocalSharedEntityWithoutSource()
+    {
+        $sharedEntity = new TestSharedEntity('shared');
+        $sharedEntity->setCode('local code');
+        $source = new Source('remote-origin', '12313');
+        $sharedEntity->setSource($source);
+        $this->em->persist($sharedEntity);
+        $this->em->flush();
+
+        $namingStrategy = new SerializedNameAnnotationStrategy(new CamelCaseNamingStrategy());
+        $serializer = new Serializer(
+          new MetadataFactory(new AnnotationDriver(new AnnotationReader())),
+          new HandlerRegistry(),
+          new DoctrineSharedEntityConstructor(
+            static::$kernel->getContainer()->get('doctrine'),
+            new UnserializeObjectConstructor(),
+            static::$kernel->getContainer()->get('digital_ascetic.shared_entity_service'),
+            static::$kernel->getContainer()->get('logger')
+          ),
+          new Map(array('json' => new JsonSerializationVisitor($namingStrategy))),
+          new Map(array('json' => new JsonDeserializationVisitor($namingStrategy)))
+        );
+
+        $id = $sharedEntity->getId();
+
+        // Omit source in serialized version but use local correct id
+        $jsonSe = '{"id": "'. $id .'", "name": "remote-shared"}';
+
+        /** @var TestSharedEntity $desSharedEntity */
+        $desSharedEntity = $serializer->deserialize($jsonSe, TestSharedEntity::class, 'json');
+
+        $this->assertNotNull($desSharedEntity);
+        $this->assertInstanceOf(TestSharedEntity::class, $desSharedEntity);
+        $this->assertEquals($sharedEntity->getId(), $desSharedEntity->getId());
+        $this->assertEquals('remote-shared', $desSharedEntity->getName());
+        $this->assertEquals('local code', $desSharedEntity->getCode());
+
+    }
+
     /**
      * {@inheritDoc}
      */

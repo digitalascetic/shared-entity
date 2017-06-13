@@ -82,7 +82,7 @@ class DoctrineSharedEntityConstructor implements ObjectConstructorInterface
         // If it's a managed class and also a SharedEntity follow a special object construction flow
         if ($metadata->reflection->implementsInterface(SharedEntity::class)) {
 
-            // Just handle entities coming from different origins (otherwise we already have the id)
+            // Just handle entities having source data and coming from different origins (otherwise we already have the id)
             if ($this->hasSourceData($data)) {
 
                 // origin might be absent for globally shared entities
@@ -104,13 +104,6 @@ class DoctrineSharedEntityConstructor implements ObjectConstructorInterface
                 }
 
             }
-
-            // Otherwise avoid to deserialize the id property and deserialize with fallback constructor
-
-            unset($data['id']);
-            unset($metadata->propertyMetadata['id']);
-
-            return $this->fallbackConstructor->construct($visitor, $metadata, $data, $type, $context);
 
         }
 

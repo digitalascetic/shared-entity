@@ -1,5 +1,11 @@
 # CHANGELOG
 
+1.0.6
+-----
+
+ * Correctly handle serialized ```SharedEntity``` without source but with id (e.g. for client/server communication)
+  
+
 1.0.5
 -----
  
