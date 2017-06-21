@@ -1,6 +1,6 @@
 # CHANGELOG
 
-1.0.6
+1.0.7
 -----
 
  * **BUGFIX** Correctly handle non locally persisted remote ```SharedEntity``` (bug introduced in 1.0.6)
