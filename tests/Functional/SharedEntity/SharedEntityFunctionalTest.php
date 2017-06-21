@@ -202,6 +202,37 @@ class SharedEntityFunctionalTest extends KernelTestCase
 
     }
 
+    public function testDeserializeRemoteNonExistingSharedEntity()
+    {
+
+        $namingStrategy = new SerializedNameAnnotationStrategy(new CamelCaseNamingStrategy());
+        $serializer = new Serializer(
+          new MetadataFactory(new AnnotationDriver(new AnnotationReader())),
+          new HandlerRegistry(),
+          new DoctrineSharedEntityConstructor(
+            static::$kernel->getContainer()->get('doctrine'),
+            new UnserializeObjectConstructor(),
+            static::$kernel->getContainer()->get('digital_ascetic.shared_entity_service'),
+            static::$kernel->getContainer()->get('logger')
+          ),
+          new Map(array('json' => new JsonSerializationVisitor($namingStrategy))),
+          new Map(array('json' => new JsonDeserializationVisitor($namingStrategy)))
+        );
+
+        $jsonSe = '{"id": "92090", "name": "remote-shared", "source": { "origin": "remote-origin", "id": "12313"}}';
+
+        /** @var TestSharedEntity $desSharedEntity */
+        $desSharedEntity = $serializer->deserialize($jsonSe, TestSharedEntity::class, 'json');
+
+        $this->assertNotNull($desSharedEntity);
+        $this->assertInstanceOf(TestSharedEntity::class, $desSharedEntity);
+        // id is not unserialized because the entity will get a new local id on persist
+        // while maintaining the source
+        $this->assertNull($desSharedEntity->getId());
+        $this->assertEquals('remote-shared', $desSharedEntity->getName());
+
+    }
+
     /**
      * {@inheritDoc}
      */

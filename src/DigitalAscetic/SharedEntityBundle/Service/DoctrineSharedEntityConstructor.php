@@ -83,7 +83,7 @@ class DoctrineSharedEntityConstructor implements ObjectConstructorInterface
         if ($metadata->reflection->implementsInterface(SharedEntity::class)) {
 
             // Just handle entities having source data and coming from different origins (otherwise we already have the id)
-            if ($this->hasSourceData($data)) {
+            if ($this->isRemoteEntityWithSourceData($data)) {
 
                 // origin might be absent for globally shared entities
                 $origin = isset($data['source']['origin']) ? $data['source']['origin'] : null;
@@ -102,6 +102,12 @@ class DoctrineSharedEntityConstructor implements ObjectConstructorInterface
 
                     return $object;
                 }
+
+                // Otherwise avoid to deserialize the id property and deserialize with fallback constructor
+                unset($data['id']);
+                unset($metadata->propertyMetadata['id']);
+
+                return $this->fallbackConstructor->construct($visitor, $metadata, $data, $type, $context);
 
             }
 
@@ -142,7 +148,7 @@ class DoctrineSharedEntityConstructor implements ObjectConstructorInterface
         return $object;
     }
 
-    private function hasSourceData($data)
+    private function isRemoteEntityWithSourceData($data)
     {
 
         if (!isset($data['source']) || !isset($data['source']['id'])) {
