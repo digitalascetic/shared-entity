@@ -3,6 +3,12 @@
 1.0.6
 -----
 
+ * **BUGFIX** Correctly handle non locally persisted remote ```SharedEntity``` (bug introduced in 1.0.6)
+  
+
+1.0.6
+-----
+
  * Correctly handle serialized ```SharedEntity``` without source but with id (e.g. for client/server communication)
   
 
