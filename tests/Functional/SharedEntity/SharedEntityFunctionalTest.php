@@ -89,6 +89,7 @@ class SharedEntityFunctionalTest extends KernelTestCase
         $sharedEntity->setSource($source);
         $this->em->persist($sharedEntity);
         $this->em->flush();
+        $id = $sharedEntity->getId();
 
         $namingStrategy = new SerializedNameAnnotationStrategy(new CamelCaseNamingStrategy());
         $serializer = new Serializer(
@@ -104,14 +105,14 @@ class SharedEntityFunctionalTest extends KernelTestCase
           new Map(array('json' => new JsonDeserializationVisitor($namingStrategy)))
         );
 
-        $jsonSe = '{"id": "92090", "name": "remote-shared", "source": { "origin": "remote-origin", "id": "12313"}}';
+        $jsonSe = '{"id": 92090, "name": "remote-shared", "source": { "origin": "remote-origin", "id": "12313"}}';
 
         /** @var TestSharedEntity $desSharedEntity */
         $desSharedEntity = $serializer->deserialize($jsonSe, TestSharedEntity::class, 'json');
 
         $this->assertNotNull($desSharedEntity);
         $this->assertInstanceOf(TestSharedEntity::class, $desSharedEntity);
-        $this->assertEquals($sharedEntity->getId(), $desSharedEntity->getId());
+        $this->assertEquals($id, $desSharedEntity->getId());
         $this->assertEquals('remote-shared', $desSharedEntity->getName());
         $this->assertEquals('local code', $desSharedEntity->getCode());
 

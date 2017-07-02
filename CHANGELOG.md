@@ -1,5 +1,10 @@
 # CHANGELOG
 
+1.0.8
+-----
+
+ * **BUGFIX** Always avoid deserializing remote id (id clash on updates). Also fixed error in regression test that allowed the bug to appear in the first place.
+
 1.0.7
 -----
 
