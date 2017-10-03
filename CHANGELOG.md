@@ -1,5 +1,10 @@
 # CHANGELOG
 
+1.0.9
+------
+
+ * **BUGFIX** Previous bugfix was not taking into consideration local/locally persisted entities: always use source id instead of deserialized id with ```SharedEntity```
+
 1.0.8
 -----
 

@@ -9,6 +9,7 @@ use JMS\Serializer\Construction\ObjectConstructorInterface;
 use JMS\Serializer\DeserializationContext;
 use JMS\Serializer\Exception\RuntimeException;
 use JMS\Serializer\Metadata\ClassMetadata;
+use JMS\Serializer\Metadata\PropertyMetadata;
 use JMS\Serializer\VisitorInterface;
 use Psr\Log\LoggerInterface;
 
@@ -51,7 +52,6 @@ class DoctrineSharedEntityConstructor implements ObjectConstructorInterface
 
     }
 
-
     /**
      * {@inheritdoc}
      */
@@ -82,10 +82,10 @@ class DoctrineSharedEntityConstructor implements ObjectConstructorInterface
         // If it's a managed class and also a SharedEntity follow a special object construction flow
         if ($metadata->reflection->implementsInterface(SharedEntity::class)) {
 
-            // Just handle entities having source data and coming from different origins (otherwise we already have the id)
-            if ($this->isRemoteEntityWithSourceData($data)) {
+            // Just handle entities having source data
+            if ($this->hasSourceData($data)) {
 
-                // Always avoid to deserialize the id to avoid update clashes, remote is remote just trust source
+                // Always avoid to deserialize the id to avoid update clashes, could be a remote id, just trust source
                 unset($data['id']);
                 unset($metadata->propertyMetadata['id']);
 
@@ -148,14 +148,10 @@ class DoctrineSharedEntityConstructor implements ObjectConstructorInterface
         return $object;
     }
 
-    private function isRemoteEntityWithSourceData($data)
+    private function hasSourceData($data)
     {
 
         if (!isset($data['source']) || !isset($data['source']['id'])) {
-            return false;
-        }
-
-        if (isset($data['source']['origin']) && $data['source']['origin'] === $this->sharedEntityService->getOrigin()) {
             return false;
         }
 
