@@ -1,5 +1,10 @@
 # CHANGELOG
 
+1.0.10
+------
+
+ * Added a static method to create ```Source``` object from source unique id.
+
 1.0.9
 ------
 

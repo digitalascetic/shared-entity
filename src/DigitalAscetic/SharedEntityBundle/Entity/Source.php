@@ -20,6 +20,25 @@ use JMS\Serializer\Annotation\Groups;
  */
 class Source
 {
+
+    /**
+     * Create a Source object from a string representing a uniqe id in the
+     * form <origin>@<id>
+     *
+     * @param string $uniqeId
+     * @return Source
+     */
+    public static function createSourceFromUniqueId($uniqeId)
+    {
+        if (strpos($uniqeId, '@')) {
+            list($origin, $id) = explode('@', $uniqeId);
+
+            return new Source($origin, $id);
+        }
+
+        return new Source(null, $uniqeId);
+    }
+
     /**
      * @var string
      *
