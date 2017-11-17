@@ -33,6 +33,11 @@ class DoctrineSharedEntityConstructor implements ObjectConstructorInterface
     private $logger;
 
     /**
+     * @var array
+     */
+    private $cache = array();
+
+    /**
      * DoctrineSharedEntityConstructor constructor.
      * @param ManagerRegistry $managerRegistry
      * @param ObjectConstructorInterface $fallbackConstructor
@@ -92,11 +97,10 @@ class DoctrineSharedEntityConstructor implements ObjectConstructorInterface
                 // origin might be absent for globally shared entities
                 $origin = isset($data['source']['origin']) ? $data['source']['origin'] : null;
 
-                // See if the shared entity is already in local db
-                $object = $this->sharedEntityService->getEntityFromSource(
-                  $metadata->name,
-                  new Source($origin, $data['source']['id'])
-                );
+                $source = new Source($origin, $data['source']['id']);
+
+                // See if the shared entity is already in local db or in cache
+                $object = $this->getEntityFromSource($metadata->name, $source);
 
                 // If an actual entity could be found initialize and return it
                 if ($object) {
@@ -104,11 +108,17 @@ class DoctrineSharedEntityConstructor implements ObjectConstructorInterface
                     $this->logger->info('Updating existing shared entity with source '.$object->getSource());
                     $objectManager->initializeObject($object);
 
-                    return $object;
+                } else {
+
+                    $object = $this->fallbackConstructor->construct($visitor, $metadata, $data, $type, $context);
+
                 }
 
-                return $this->fallbackConstructor->construct($visitor, $metadata, $data, $type, $context);
+                if ($object && !array_key_exists($metadata->name.$source->getUniqueId(), $this->cache)) {
+                    $this->cache[$metadata->name.$source->getUniqueId()] = $object;
+                }
 
+                return $object;
             }
 
         }
@@ -144,6 +154,20 @@ class DoctrineSharedEntityConstructor implements ObjectConstructorInterface
         }
 
         $objectManager->initializeObject($object);
+
+        return $object;
+    }
+
+    private function getEntityFromSource($entityName, Source $source)
+    {
+        $object = $this->sharedEntityService->getEntityFromSource(
+          $entityName,
+          $source
+        );
+
+        if (!$object && array_key_exists($entityName.$source->getUniqueId(), $this->cache)) {
+            $object = $this->cache[$entityName.$source->getUniqueId()];
+        }
 
         return $object;
     }

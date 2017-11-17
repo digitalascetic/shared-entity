@@ -217,7 +217,7 @@ class SharedEntityFunctionalTest extends KernelTestCase
      * shared entity remote entity is identified through source and override local
      * persisted entity.
      */
-    public function testDeserializeComposedRemoteNewSharedEntity()
+    public function testDeserializeComposedRemotePersistedSharedEntity()
     {
         $sharedEntity = new TestSharedEntity('shared');
         $sharedEntity->setCode('local code');
@@ -374,6 +374,30 @@ class SharedEntityFunctionalTest extends KernelTestCase
         $this->assertNotNull($composedSE->getSharedEntity()->getId());
         $this->assertEquals($persistedId, $composedSE->getSharedEntity()->getId());
         $this->assertEquals('local shared', $composedSE->getSharedEntity()->getName());
+
+    }
+
+    /**
+     * Deserialize a non already persisted entity with a circular reference (use cache)
+     */
+    public function testDeserializeComposedRemoteNewSharedEntity()
+    {
+
+        $serializer = $this->getSerializer();
+
+        $jsonSe = '{"id": "49858", "source": { "origin": "remote-origin", "id": "49858"}, "sharedEntity": {"id": "11111", "source": { "origin": "remote-origin", "id": "11111"}, "composedEntity": {"id": "49858", "source": { "origin": "remote-origin", "id": "49858"}}}}';
+
+        /** @var TestComposedSharedEntity $desComposed */
+        $desComposed = $serializer->deserialize($jsonSe, TestComposedSharedEntity::class, 'json');
+
+        $this->assertNotNull($desComposed);
+        $this->assertInstanceOf(TestComposedSharedEntity::class, $desComposed);
+        $this->assertNotNull($desComposed->getSharedEntity());
+        $this->assertInstanceOf(TestSharedEntity::class, $desComposed->getSharedEntity());
+        $this->assertNotNull($desComposed->getSharedEntity()->getSource());
+        $this->assertEquals('11111', $desComposed->getSharedEntity()->getSource()->getId());
+        $this->assertNotNull($desComposed->getSharedEntity()->getComposedEntity());
+        $this->assertSame($desComposed, $desComposed->getSharedEntity()->getComposedEntity());
 
     }
 

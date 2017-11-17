@@ -5,6 +5,7 @@ framework:
     profiler:
         collect: false
     secret: 'secret'
+    translator: { fallbacks: [en] }
 
 digital_ascetic_shared_entity:
     enabled: true

@@ -1,5 +1,11 @@
 # CHANGELOG
 
+1.0.11
+------
+
+ * **BUGFIX** Correctly handle deserializing non persisted entities with circular cross/circular references.
+
+
 1.0.10
 ------
 

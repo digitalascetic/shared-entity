@@ -52,6 +52,15 @@ class TestSharedEntity implements SharedEntity
     private $source;
 
     /**
+     * @var TestComposedSharedEntity
+     *
+     * @ORM\ManyToOne(targetEntity="DigitalAscetic\SharedEntityBundle\Test\Functional\SharedEntity\TestComposedSharedEntity")
+     * @ORM\JoinColumn(name="composedSharedEntity_id", referencedColumnName="id", nullable=true)
+     * @Type("DigitalAscetic\SharedEntityBundle\Test\Functional\SharedEntity\TestComposedSharedEntity")
+     */
+    private $composedEntity;
+
+    /**
      * TestSharedEntity constructor.
      * @param string $name
      */
@@ -121,6 +130,22 @@ class TestSharedEntity implements SharedEntity
     public function setCode($code)
     {
         $this->code = $code;
+    }
+
+    /**
+     * @return TestComposedSharedEntity
+     */
+    public function getComposedEntity()
+    {
+        return $this->composedEntity;
+    }
+
+    /**
+     * @param TestComposedSharedEntity $composedEntity
+     */
+    public function setComposedEntity($composedEntity)
+    {
+        $this->composedEntity = $composedEntity;
     }
     
 }
