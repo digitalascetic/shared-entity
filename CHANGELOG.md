@@ -1,5 +1,11 @@
 # CHANGELOG
 
+1.0.12
+------
+
+ * Create ```SharedEntityTrait``` and tests.
+
+
 1.0.11
 ------
 

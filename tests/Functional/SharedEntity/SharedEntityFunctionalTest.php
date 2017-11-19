@@ -67,6 +67,22 @@ class SharedEntityFunctionalTest extends KernelTestCase
     }
 
     /**
+     * Persist local entity, entity is persisted and source is set to default origin/local id
+     */
+    public function testPersistLocalSharedEntityWithTrait()
+    {
+        $sharedEntity = new TestTraitSharedEntity('shared');
+        $this->em->persist($sharedEntity);
+        $this->em->flush();
+
+        $this->assertInstanceOf(SharedEntity::class, $sharedEntity);
+        $this->assertNotNull($sharedEntity->getId());
+        $this->assertNotNull($sharedEntity->getSource());
+        $this->assertEquals($sharedEntity->getId(), $sharedEntity->getSource()->getId());
+        $this->assertEquals('test-origin', $sharedEntity->getSource()->getOrigin());
+    }
+
+    /**
      * Persist entity already with source, entity is persisted but source is left untouched
      */
     public function testPersistRemoteSharedEntity()
@@ -163,6 +179,39 @@ class SharedEntityFunctionalTest extends KernelTestCase
 
         $this->assertNotNull($desSharedEntity);
         $this->assertInstanceOf(TestSharedEntity::class, $desSharedEntity);
+        $this->assertEquals($id, $desSharedEntity->getId());
+        $this->assertEquals('remote-shared', $desSharedEntity->getName());
+        $this->assertEquals('local code', $desSharedEntity->getCode());
+
+    }
+
+    /**
+     * Deserialize an already locally persisted remote entity,
+     * remote entity is identified through source and override local
+     * persisted entity.
+     */
+    public function testDeserializeRemoteSharedEntityWithTrait()
+    {
+        $sharedEntity = new TestTraitSharedEntity('shared');
+        $sharedEntity->setCode('local code');
+        $source = new Source('remote-origin', '12313');
+        $sharedEntity->setSource($source);
+        $this->em->persist($sharedEntity);
+        $this->em->flush();
+
+        $id = $sharedEntity->getId();
+
+        $this->em->clear();
+
+        $serializer = $this->getSerializer();
+
+        $jsonSe = '{"id": 92090, "name": "remote-shared", "source": { "origin": "remote-origin", "id": "12313"}}';
+
+        /** @var TestSharedEntity $desSharedEntity */
+        $desSharedEntity = $serializer->deserialize($jsonSe, TestTraitSharedEntity::class, 'json');
+
+        $this->assertNotNull($desSharedEntity);
+        $this->assertInstanceOf(TestTraitSharedEntity::class, $desSharedEntity);
         $this->assertEquals($id, $desSharedEntity->getId());
         $this->assertEquals('remote-shared', $desSharedEntity->getName());
         $this->assertEquals('local code', $desSharedEntity->getCode());
