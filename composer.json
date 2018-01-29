@@ -1,6 +1,6 @@
 {
   "name": "digitalascetic/shared-entity",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "license": "MIT",
   "type": "library",
   "description": "Digital Ascetic Shared Entity Bundle",
@@ -30,7 +30,7 @@
     "doctrine/doctrine-bundle": "~1.6",
     "sensio/framework-extra-bundle": "^3.0.2",
     "symfony/symfony": "^3.2",
-    "jms/serializer-bundle": "^2.3.*",
+    "jms/serializer-bundle": "^2.3.0",
     "symfony/monolog-bundle": "^2.8"
 
   },
