@@ -58,7 +58,7 @@ if [ -e package.zip ]
    rm package.zip;
 fi
 
-zip -r package.zip ./ -x ".git/*" "vendor/*" "makeRealease.sh" ".idea/*" "*.iml" "tests/*" "CHANGELOG.md" "README.md" ".gitignore" ".DS_Store" "phpunit.xml" "package.zip"
+zip -r package.zip ./src CHANGELOG.md README.md composer.json
 
 echo
 echo "Uploading package to Gemfury"
@@ -72,28 +72,11 @@ echo
 
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
-
-
 git tag v$VERSION
 echo
 git push
 echo
 git push --tags
 echo
-
-if [[ $CURRENT_BRANCH == 'develop' ]]
-  then
-   echo
-   git checkout master
-   echo
-   echo "Merging in master"
-   echo
-   git merge develop
-   echo "Pushing changes to remote"
-   echo
-   git push
-   echo
-   git checkout develop
-fi
 
 echo
