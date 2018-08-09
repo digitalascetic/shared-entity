@@ -31,7 +31,7 @@ class Source
     public static function createSourceFromUniqueId($uniqeId)
     {
         if (strpos($uniqeId, '@')) {
-            list($origin, $id) = explode('@', $uniqeId);
+            list($id, $origin) = explode('@', $uniqeId);
 
             return new Source($origin, $id);
         }
