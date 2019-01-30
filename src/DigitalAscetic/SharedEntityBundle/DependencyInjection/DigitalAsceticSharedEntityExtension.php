@@ -39,6 +39,7 @@ class DigitalAsceticSharedEntityExtension extends Extension implements PrependEx
             );
             $sharedEntitySub->addArgument(new Reference('service_container'));
             $sharedEntitySub->addArgument($config['origin']);
+            $sharedEntitySub->addArgument(new Reference('doctrine.orm.entity_manager'));
             $sharedEntitySub->addTag(
               'kernel.event_listener',
               array('event' => 'digital_ascetic.shared.entity.persist', 'method' => 'onSharedEntityPersist')
