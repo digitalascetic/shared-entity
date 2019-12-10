@@ -1,5 +1,10 @@
 # CHANGELOG
 
+1.2.0
+------
+
+ * Updated required dependency ````JMS/Serializer```` to v.3.3
+
 1.0.12
 ------
 
