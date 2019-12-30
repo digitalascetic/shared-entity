@@ -9,8 +9,7 @@ use JMS\Serializer\Construction\ObjectConstructorInterface;
 use JMS\Serializer\DeserializationContext;
 use JMS\Serializer\Exception\RuntimeException;
 use JMS\Serializer\Metadata\ClassMetadata;
-use JMS\Serializer\Metadata\PropertyMetadata;
-use JMS\Serializer\VisitorInterface;
+use JMS\Serializer\Visitor\DeserializationVisitorInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -45,11 +44,12 @@ class DoctrineSharedEntityConstructor implements ObjectConstructorInterface
      * @param LoggerInterface $logger
      */
     public function __construct(
-      ManagerRegistry $managerRegistry,
-      ObjectConstructorInterface $fallbackConstructor,
-      SharedEntityService $sharedEntityService,
-      LoggerInterface $logger
-    ) {
+        ManagerRegistry $managerRegistry,
+        ObjectConstructorInterface $fallbackConstructor,
+        SharedEntityService $sharedEntityService,
+        LoggerInterface $logger
+    )
+    {
         $this->managerRegistry = $managerRegistry;
         $this->fallbackConstructor = $fallbackConstructor;
         $this->sharedEntityService = $sharedEntityService;
@@ -60,13 +60,8 @@ class DoctrineSharedEntityConstructor implements ObjectConstructorInterface
     /**
      * {@inheritdoc}
      */
-    public function construct(
-      VisitorInterface $visitor,
-      ClassMetadata $metadata,
-      $data,
-      array $type,
-      DeserializationContext $context
-    ) {
+    public function construct(DeserializationVisitorInterface $visitor, ClassMetadata $metadata, $data, array $type, DeserializationContext $context): ?object
+    {
 
         // Locate possible ObjectManager
         $objectManager = $this->managerRegistry->getManagerForClass($metadata->name);
@@ -105,7 +100,7 @@ class DoctrineSharedEntityConstructor implements ObjectConstructorInterface
                 // If an actual entity could be found initialize and return it
                 if ($object) {
 
-                    $this->logger->info('Updating existing shared entity with source '.$object->getSource());
+                    $this->logger->info('Updating existing shared entity with source ' . $object->getSource());
                     $objectManager->initializeObject($object);
 
                 } else {
@@ -114,8 +109,8 @@ class DoctrineSharedEntityConstructor implements ObjectConstructorInterface
 
                 }
 
-                if ($object && !array_key_exists($metadata->name.$source->getUniqueId(), $this->cache)) {
-                    $this->cache[$metadata->name.$source->getUniqueId()] = $object;
+                if ($object && !array_key_exists($metadata->name . $source->getUniqueId(), $this->cache)) {
+                    $this->cache[$metadata->name . $source->getUniqueId()] = $object;
                 }
 
                 return $object;
@@ -146,10 +141,10 @@ class DoctrineSharedEntityConstructor implements ObjectConstructorInterface
 
         if (!$object) {
             throw new RuntimeException(
-              "Cannot find an entity of type ".$type['name'].' with identifiers: ['.join(
-                ',',
-                $identifierList
-              ).']. Possibly sharing entity that do not implements SharedEntity interface or missing source infos.'
+                "Cannot find an entity of type " . $type['name'] . ' with identifiers: [' . join(
+                    ',',
+                    $identifierList
+                ) . ']. Possibly sharing entity that do not implements SharedEntity interface or missing source infos.'
             );
         }
 
@@ -161,12 +156,12 @@ class DoctrineSharedEntityConstructor implements ObjectConstructorInterface
     private function getEntityFromSource($entityName, Source $source)
     {
         $object = $this->sharedEntityService->getEntityFromSource(
-          $entityName,
-          $source
+            $entityName,
+            $source
         );
 
-        if (!$object && array_key_exists($entityName.$source->getUniqueId(), $this->cache)) {
-            $object = $this->cache[$entityName.$source->getUniqueId()];
+        if (!$object && array_key_exists($entityName . $source->getUniqueId(), $this->cache)) {
+            $object = $this->cache[$entityName . $source->getUniqueId()];
         }
 
         return $object;

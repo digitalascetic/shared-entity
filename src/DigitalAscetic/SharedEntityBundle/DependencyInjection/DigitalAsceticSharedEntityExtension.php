@@ -2,8 +2,6 @@
 
 namespace DigitalAscetic\SharedEntityBundle\DependencyInjection;
 
-use DigitalAscetic\SharedEntityBundle\EventListener\BaseEntityMappingListener;
-use DigitalAscetic\SharedEntityBundle\EventListener\FileEntitySubscriber;
 use DigitalAscetic\SharedEntityBundle\EventListener\SharedEntityDoctrineSubscriber;
 use DigitalAscetic\SharedEntityBundle\EventListener\SharedEntitySubscriber;
 use DigitalAscetic\SharedEntityBundle\Service\DoctrineSharedEntityConstructor;
