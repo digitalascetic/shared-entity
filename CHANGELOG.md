@@ -1,11 +1,9 @@
 # CHANGELOG
-1.1.7
-------
-* Fixed DoctrineSharedEntityConstructor implementing ObjectConstructorInterface 
 
-1.1.6
+2.0.0
 ------
 * Allow compatibility with JMS/Serializer to v.3.3.0
+* Fixed DoctrineSharedEntityConstructor implementing ObjectConstructorInterface
 
 1.0.12
 ------
