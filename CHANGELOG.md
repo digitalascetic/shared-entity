@@ -1,5 +1,9 @@
 # CHANGELOG
 
+2.0.1
+------
+* Fixed DoctrineSharedEntityConstructor $metadata->reflection is no longer available, instead we use \ReflectionClass
+
 2.0.0
 ------
 * Allow compatibility with JMS/Serializer to v.3.3.0

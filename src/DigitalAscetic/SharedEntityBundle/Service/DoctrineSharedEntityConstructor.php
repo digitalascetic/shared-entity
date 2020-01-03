@@ -80,7 +80,8 @@ class DoctrineSharedEntityConstructor implements ObjectConstructorInterface
         }
 
         // If it's a managed class and also a SharedEntity follow a special object construction flow
-        if ($metadata->reflection->implementsInterface(SharedEntity::class)) {
+        $reflectionClass = new \ReflectionClass($metadata->name);
+        if ($reflectionClass->implementsInterface(SharedEntity::class)) {
 
             // Just handle entities having source data
             if ($this->hasSourceData($data)) {
