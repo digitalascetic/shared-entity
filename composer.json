@@ -1,6 +1,6 @@
 {
   "name": "digitalascetic/shared-entity",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "license": "MIT",
   "type": "symfony-bundle",
   "description": "Digital Ascetic Shared Entity Bundle",
@@ -37,7 +37,7 @@
   "require-dev": {
     "sensio/generator-bundle": "^3.0",
     "phpunit/phpunit": "5.7.*",
-    "symfony/phpunit-bridge": "3.2.*",
+    "symfony/phpunit-bridge": "^5.0",
     "liip/functional-test-bundle": "1.7.x",
     "doctrine/doctrine-fixtures-bundle": "2.3.*"
   }

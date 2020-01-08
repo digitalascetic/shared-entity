@@ -57,12 +57,8 @@ class DoctrineSharedEntityConstructor implements ObjectConstructorInterface
 
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function construct(DeserializationVisitorInterface $visitor, ClassMetadata $metadata, $data, array $type, DeserializationContext $context): ?object
     {
-
         // Locate possible ObjectManager
         $objectManager = $this->managerRegistry->getManagerForClass($metadata->name);
 
@@ -153,6 +149,7 @@ class DoctrineSharedEntityConstructor implements ObjectConstructorInterface
 
         return $object;
     }
+
 
     private function getEntityFromSource($entityName, Source $source)
     {

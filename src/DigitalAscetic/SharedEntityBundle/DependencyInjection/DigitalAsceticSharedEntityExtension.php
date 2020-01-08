@@ -29,7 +29,7 @@ class DigitalAsceticSharedEntityExtension extends Extension implements PrependEx
             $sharedEntityServ->addArgument($config['origin']);
             $sharedEntityServ->setPublic(true);
             $container->setDefinition('digital_ascetic.shared_entity_service', $sharedEntityServ);
-
+            $container->setAlias(SharedEntityService::class, 'digital_ascetic.shared_entity_service');
 
             // SharedEntity events handler
             $sharedEntitySub = new Definition(
