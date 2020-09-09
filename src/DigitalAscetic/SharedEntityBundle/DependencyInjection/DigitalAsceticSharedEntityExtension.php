@@ -33,39 +33,39 @@ class DigitalAsceticSharedEntityExtension extends Extension implements PrependEx
 
             // SharedEntity events handler
             $sharedEntitySub = new Definition(
-              SharedEntitySubscriber::class
+                SharedEntitySubscriber::class
             );
             $sharedEntitySub->addArgument(new Reference('service_container'));
             $sharedEntitySub->addArgument($config['origin']);
             $sharedEntitySub->addArgument(new Reference('doctrine.orm.entity_manager'));
             $sharedEntitySub->addTag(
-              'kernel.event_listener',
-              array('event' => 'digital_ascetic.shared.entity.persist', 'method' => 'onSharedEntityPersist')
+                'kernel.event_listener',
+                array('event' => 'digital_ascetic.shared.entity.persist', 'method' => 'onSharedEntityPersist')
             );
             $container->setDefinition(
-              'digital_ascetic.shared_entity.persist_subscriber',
-              $sharedEntitySub
+                'digital_ascetic.shared_entity.persist_subscriber',
+                $sharedEntitySub
             );
 
-            
+
             // SharedEntity Doctrine Subscriber, handles SharedEntity events on Doctrine
             // SharedEntity events
             $sharedEntityDctr = new Definition(
-              SharedEntityDoctrineSubscriber::class
+                SharedEntityDoctrineSubscriber::class
             );
             $sharedEntityDctr->addArgument(new Reference('event_dispatcher'));
             $sharedEntityDctr->addArgument($config['index_source']);
             $sharedEntityDctr->setPublic(false);
             $sharedEntityDctr->addTag('doctrine.event_subscriber');
             $container->setDefinition(
-              'digital_ascetic.shared_entity.sharedentity_doctrine',
-              $sharedEntityDctr
+                'digital_ascetic.shared_entity.sharedentity_doctrine',
+                $sharedEntityDctr
             );
 
 
             // SharedEntity JMSSerializer ObjectConstructor
             $sharedEntityConstr = new Definition(
-              DoctrineSharedEntityConstructor::class
+                DoctrineSharedEntityConstructor::class
             );
             $sharedEntityConstr->addArgument(new Reference('doctrine'));
             $sharedEntityConstr->addArgument(new Reference('jms_serializer.unserialize_object_constructor'));
@@ -73,14 +73,9 @@ class DigitalAsceticSharedEntityExtension extends Extension implements PrependEx
             $sharedEntityConstr->addArgument(new Reference('logger'));
             $sharedEntityConstr->setPublic(false);
             $container->setDefinition(
-              'digital_ascetic.doctrine_shared_entity_constructor',
-              $sharedEntityConstr
+                'digital_ascetic.doctrine_shared_entity_constructor',
+                $sharedEntityConstr
             );
-            $container->setAlias(
-              'jms_serializer.object_constructor',
-              'digital_ascetic.doctrine_shared_entity_constructor'
-            );
-
         }
 
 
@@ -98,13 +93,13 @@ class DigitalAsceticSharedEntityExtension extends Extension implements PrependEx
 
         if (!isset($bundles['FrameworkBundle'])) {
             throw new InvalidConfigurationException(
-              "You must register FrameworkBundle in AppKernel in order to work with SharedEntityBundle"
+                "You must register FrameworkBundle in AppKernel in order to work with SharedEntityBundle"
             );
         }
 
         if (!isset($bundles['DoctrineBundle'])) {
             throw new InvalidConfigurationException(
-              "You must register DoctrineBundle in AppKernel in order to work with SharedEntityBundle"
+                "You must register DoctrineBundle in AppKernel in order to work with SharedEntityBundle"
             );
         }
 

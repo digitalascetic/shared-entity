@@ -1,5 +1,10 @@
 # CHANGELOG
 
+3.0.0
+-----
+* Added DoctrineSharedEntityPass (CompilerPass) to decorate jms_serializer.object_constructor.
+* Removed alias for jms_serializer.object_constructor.
+
 2.0.1
 ------
 * Fixed DoctrineSharedEntityConstructor $metadata->reflection is no longer available, instead we use \ReflectionClass
