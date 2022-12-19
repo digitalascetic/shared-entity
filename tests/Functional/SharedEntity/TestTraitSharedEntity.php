@@ -12,7 +12,6 @@ namespace DigitalAscetic\SharedEntityBundle\Test\Functional\SharedEntity;
 use DigitalAscetic\SharedEntityBundle\Entity\SharedEntity;
 use DigitalAscetic\SharedEntityBundle\Entity\SharedEntityTrait;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Type;
 
 /**
  * Class TestTraitSharedEntity
@@ -21,41 +20,45 @@ use JMS\Serializer\Annotation\Type;
  * @ORM\Table()
  * @ORM\Entity()
  */
+#[ORM\Table]
+#[ORM\Entity]
 class TestTraitSharedEntity implements SharedEntity
 {
     use SharedEntityTrait;
 
     /**
-     * @var int
+     * @var int|null
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Type("integer")
      */
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
+    #[ORM\Column]
+    protected ?int $id = null;
 
     /**
-     * @var string
+     * @var string|null
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
-     * @Type("string")
      */
-    private $name;
+    #[ORM\Column(name: 'name', type: 'string', nullable: true)]
+    private ?string $name = null;
 
     /**
-     * @var string
+     * @var string|null
      *
      * @ORM\Column(name="code", type="string", length=255, nullable=true)
-     * @Type("string")
      */
-    private $code;
+    #[ORM\Column(name: 'code', type: 'string', nullable: true)]
+    private ?string $code = null;
 
     /**
      * TestTraitSharedEntity constructor.
      * @param string $name
      */
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
@@ -99,5 +102,5 @@ class TestTraitSharedEntity implements SharedEntity
     {
         $this->code = $code;
     }
-    
+
 }

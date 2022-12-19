@@ -6,7 +6,7 @@ namespace DigitalAscetic\SharedEntityBundle\Service;
 use DigitalAscetic\SharedEntityBundle\Entity\SharedEntity;
 use DigitalAscetic\SharedEntityBundle\Entity\Source;
 use Doctrine\ORM\AbstractQuery;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Class SharedEntityService
@@ -16,7 +16,7 @@ class SharedEntityService
 {
 
     /**
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     private $em;
 
@@ -27,9 +27,10 @@ class SharedEntityService
 
     /**
      * SharedEntityService constructor.
-     * @param EntityManager $em
+     * @param EntityManagerInterface $em
+     * @param string $origin
      */
-    public function __construct(EntityManager $em, $origin)
+    public function __construct(EntityManagerInterface $em, string $origin)
     {
         $this->em = $em;
         $this->origin = $origin;
@@ -51,7 +52,7 @@ class SharedEntityService
     public function getEntityFromSource($entityName, Source $source)
     {
         $arr = $this->em->getRepository($entityName)->findBy(
-          array('source.origin' => $source->getOrigin(), 'source.id' => $source->getId())
+            array('source.origin' => $source->getOrigin(), 'source.id' => $source->getId())
         );
 
         return empty($arr) ? null : $arr[0];

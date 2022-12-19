@@ -1,0 +1,22 @@
+doctrine:
+  dbal:
+    default_connection: 'default'
+    connections:
+      default:
+        driver: "pdo_sqlite"
+        memory: true
+  orm:
+    auto_generate_proxy_classes: true
+    entity_managers:
+      default:
+        mappings:
+          shared_entity:
+            type: 'attribute'
+            dir: '%kernel.project_dir%/src'
+            prefix: 'DigitalAscetic\SharedEntityBundle\Entity'
+            is_bundle: false
+          shared_entity_test:
+            type: 'attribute'
+            dir: '%kernel.project_dir%/tests/Functional/SharedEntity'
+            prefix: 'DigitalAscetic\SharedEntityBundle\Test\Functional\SharedEntity'
+            is_bundle: false

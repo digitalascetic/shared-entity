@@ -9,8 +9,7 @@
 namespace DigitalAscetic\SharedEntityBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Type;
-use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 trait SharedEntityTrait
 {
@@ -19,15 +18,16 @@ trait SharedEntityTrait
      * @var Source
      *
      * @ORM\Embedded(class = "DigitalAscetic\SharedEntityBundle\Entity\Source")
-     * @Type("DigitalAscetic\SharedEntityBundle\Entity\Source")
      * @Groups({"shared_entity"})
      */
-    protected $source;
+    #[ORM\Embedded(class: 'DigitalAscetic\SharedEntityBundle\Entity\Source')]
+    #[Groups('shared_entity')]
+    protected ?Source $source = null;
 
     /**
-     * @return Source
+     * @return Source|null
      */
-    public function getSource()
+    public function getSource(): ?Source
     {
         return $this->source;
     }
@@ -65,7 +65,7 @@ trait SharedEntityTrait
     public function hasSameOrigin(SharedEntity $entity)
     {
         if ($entity && $entity->getSource() && $this->getSource() &&
-          $entity->getSource()->getOrigin() == $this->getSource()->getOrigin()
+            $entity->getSource()->getOrigin() == $this->getSource()->getOrigin()
         ) {
             return true;
         }

@@ -9,8 +9,7 @@
 namespace DigitalAscetic\SharedEntityBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Type;
-use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * Class Source
@@ -18,6 +17,7 @@ use JMS\Serializer\Annotation\Groups;
  *
  * @ORM\Embeddable
  */
+#[ORM\Embeddable]
 class Source
 {
 
@@ -40,22 +40,24 @@ class Source
     }
 
     /**
-     * @var string
+     * @var string|null
      *
      * @ORM\Column(name="origin", type="string", length=255, nullable=true)
-     * @Type("string")
      * @Groups({"shared_entity"})
      */
-    private $origin;
+    #[ORM\Column(name: 'origin', type: 'string', nullable: true)]
+    #[Groups('shared_entity')]
+    private ?string $origin = null;
 
     /**
-     * @var string
+     * @var string|null
      *
      * @ORM\Column(name="id", type="string", length=255, nullable=true)
-     * @Type("string")
      * @Groups({"shared_entity"})
      */
-    private $id;
+    #[ORM\Column(name: 'id', type: 'string', nullable: true)]
+    #[Groups('shared_entity')]
+    private ?string $id = null;
 
     /**
      * Source constructor.
@@ -69,24 +71,24 @@ class Source
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getOrigin()
+    public function getOrigin(): ?string
     {
         return $this->origin;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
     public function getUniqueId()
     {
-        return $this->id.'@'.$this->origin;
+        return $this->id . '@' . $this->origin;
     }
 
     /**
@@ -96,7 +98,7 @@ class Source
      */
     public function __toString()
     {
-        return 'Source: '.$this->origin.' - '.$this->id;
+        return 'Source: ' . $this->origin . ' - ' . $this->id;
     }
 
 }

@@ -3,3 +3,5 @@ vendor
 .gemfury
 shared-entity.iml
 package.zip
+var
+.phpunit.result.cache

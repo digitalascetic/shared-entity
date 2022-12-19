@@ -1,5 +1,9 @@
 # CHANGELOG
 
+6.2.0
+-----
+* Symfony 6.2 compatibility.
+
 3.0.0
 -----
 * Added DoctrineSharedEntityPass (CompilerPass) to decorate jms_serializer.object_constructor.

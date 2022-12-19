@@ -6,7 +6,6 @@ namespace DigitalAscetic\SharedEntityBundle\Test\Functional\SharedEntity;
 use DigitalAscetic\SharedEntityBundle\Entity\SharedEntity;
 use DigitalAscetic\SharedEntityBundle\Entity\Source;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Type;
 
 /**
  * Class TestComposedSharedEntity
@@ -15,61 +14,56 @@ use JMS\Serializer\Annotation\Type;
  * @ORM\Table()
  * @ORM\Entity()
  */
+#[ORM\Table]
+#[ORM\Entity]
 class TestComposedSharedEntity implements SharedEntity
 {
 
     /**
-     * @var int
+     * @var int|null
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Type("integer")
      */
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
+    #[ORM\Column]
+    protected ?int $id = null;
 
     /**
-     * @var string
+     * @var string|null
      *
      * @ORM\Column(name="phone", type="string", length=255, nullable=true)
-     * @Type("string")
      */
-    private $phone;
+    #[ORM\Column(name: 'phone', type: 'string', nullable: true)]
+    private ?string $phone = null;
 
     /**
      * @var TestSharedEntity
      *
      * @ORM\ManyToOne(targetEntity="DigitalAscetic\SharedEntityBundle\Test\Functional\SharedEntity\TestSharedEntity")
      * @ORM\JoinColumn(name="sharedEntity_id", referencedColumnName="id", nullable=false)
-     * @Type("DigitalAscetic\SharedEntityBundle\Test\Functional\SharedEntity\TestSharedEntity")
      */
-    private $sharedEntity;
+    #[ORM\ManyToOne(targetEntity: 'DigitalAscetic\SharedEntityBundle\Test\Functional\SharedEntity\TestSharedEntity')]
+    #[ORM\JoinColumn(name: 'sharedEntity_id', referencedColumnName: 'id', nullable: false)]
+    private TestSharedEntity $sharedEntity;
 
     /**
      * @var Source
      *
      * @ORM\Embedded(class = "DigitalAscetic\SharedEntityBundle\Entity\Source")
-     * @Type("DigitalAscetic\SharedEntityBundle\Entity\Source")
      */
-    private $source;
+    #[ORM\Embedded(class: 'DigitalAscetic\SharedEntityBundle\Entity\Source')]
+    private ?Source $source = null;
 
     /**
      * TestComposedSharedEntity constructor.
-     * @param string $phone
+     * @param string|null $phone
      */
-    public function __construct($phone)
+    public function __construct(?string $phone)
     {
         $this->phone = $phone;
-    }
-
-    /**
-     * Name used in the __toString method
-     *
-     * @return string
-     */
-    public function getInstanceName()
-    {
-        return $this->name;
     }
 
     public function getId()
@@ -77,26 +71,18 @@ class TestComposedSharedEntity implements SharedEntity
         return $this->id;
     }
 
-    public function isPersisted()
-    {
-    }
-
-    public function isSameEntity(Entity $entity)
-    {
-    }
-
     /**
-     * @return Source
+     * @return Source|null
      */
-    public function getSource()
+    public function getSource(): ?Source
     {
         return $this->source;
     }
 
     /**
-     * @param Source $source
+     * @param Source|null $source
      */
-    public function setSource(Source $source)
+    public function setSource(?Source $source): void
     {
         $this->source = $source;
     }
@@ -120,7 +106,7 @@ class TestComposedSharedEntity implements SharedEntity
     /**
      * @return TestSharedEntity
      */
-    public function getSharedEntity()
+    public function getSharedEntity(): TestSharedEntity
     {
         return $this->sharedEntity;
     }
@@ -128,7 +114,7 @@ class TestComposedSharedEntity implements SharedEntity
     /**
      * @param TestSharedEntity $sharedEntity
      */
-    public function setSharedEntity($sharedEntity)
+    public function setSharedEntity(TestSharedEntity $sharedEntity): void
     {
         $this->sharedEntity = $sharedEntity;
     }

@@ -3,8 +3,7 @@
 namespace DigitalAscetic\SharedEntityBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Type;
-use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * Class BaseSharedEntity
@@ -14,28 +13,32 @@ abstract class BaseSharedEntity implements SharedEntity
 {
 
     /**
-     * @var int
+     * @var int|null
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      * @Groups({"id"})
-     * @Type("integer")
      */
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
+    #[ORM\Column]
+    #[Groups('id')]
+    protected ?int $id = null;
 
     /**
-     * @var Source
+     * @var Source|nul
      *
      * @ORM\Embedded(class = "DigitalAscetic\SharedEntityBundle\Entity\Source")
-     * @Type("DigitalAscetic\SharedEntityBundle\Entity\Source")
      * @Groups({"shared_entity"})
      */
-    protected $source;
+    #[ORM\Embedded(class: 'DigitalAscetic\SharedEntityBundle\Entity\Source')]
+    #[Groups('shared_entity')]
+    protected ?Source $source = null;
 
     /**
      * BaseSharedEntity constructor.
-     * @param Source $entitySource
+     * @param Source|null $entitySource
      */
     public function __construct(Source $entitySource = null)
     {
@@ -51,17 +54,17 @@ abstract class BaseSharedEntity implements SharedEntity
     }
 
     /**
-     * @return Source
+     * @return Source|null
      */
-    public function getSource()
+    public function getSource(): ?Source
     {
         return $this->source;
     }
 
     /**
-     * @param Source $source
+     * @param Source|null $source
      */
-    public function setSource(Source $source)
+    public function setSource(?Source $source): void
     {
         $this->source = $source;
     }
@@ -91,7 +94,7 @@ abstract class BaseSharedEntity implements SharedEntity
     public function hasSameOrigin(SharedEntity $entity)
     {
         if ($entity && $entity->getSource() && $this->getSource() &&
-          $entity->getSource()->getOrigin() == $this->getSource()->getOrigin()
+            $entity->getSource()->getOrigin() == $this->getSource()->getOrigin()
         ) {
             return true;
         }

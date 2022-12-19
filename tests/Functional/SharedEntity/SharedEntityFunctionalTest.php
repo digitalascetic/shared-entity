@@ -4,25 +4,11 @@ namespace DigitalAscetic\SharedEntityBundle\Test\Functional\SharedEntity;
 
 use DigitalAscetic\SharedEntityBundle\Entity\SharedEntity;
 use DigitalAscetic\SharedEntityBundle\Entity\Source;
-use DigitalAscetic\SharedEntityBundle\Service\DoctrineSharedEntityConstructor;
 use DigitalAscetic\SharedEntityBundle\Service\SharedEntityService;
-use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Util\ClassUtils;
-use Doctrine\ORM as ORM;
 use Doctrine\ORM\EntityManager;
-use JMS\Serializer\Construction\UnserializeObjectConstructor;
-use JMS\Serializer\Handler\HandlerRegistry;
-use JMS\Serializer\JsonDeserializationVisitor;
-use JMS\Serializer\JsonSerializationVisitor;
-use JMS\Serializer\Metadata\Driver\AnnotationDriver;
-use JMS\Serializer\Naming\CamelCaseNamingStrategy;
-use JMS\Serializer\Naming\IdenticalPropertyNamingStrategy;
-use JMS\Serializer\Naming\SerializedNameAnnotationStrategy;
-use JMS\Serializer\Serializer;
-use Metadata\MetadataFactory;
-use PhpCollection\Map;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Serializer\Serializer;
 
 class SharedEntityFunctionalTest extends KernelTestCase
 {
@@ -35,19 +21,19 @@ class SharedEntityFunctionalTest extends KernelTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setUp()
+    protected function setUp(): void
     {
 
         $fs = new Filesystem();
-        $fs->remove(sys_get_temp_dir().'/DigitalAsceticSharedEntityBundle');
+        $fs->remove(sys_get_temp_dir() . '/DigitalAsceticSharedEntityBundle');
 
         self::bootKernel();
 
         $this->importDatabaseSchema();
 
         $this->em = static::$kernel->getContainer()
-          ->get('doctrine')
-          ->getManager();
+            ->get('doctrine')
+            ->getManager();
     }
 
     /**
@@ -71,7 +57,7 @@ class SharedEntityFunctionalTest extends KernelTestCase
      */
     public function testPersistLocalSharedEntityWithTrait()
     {
-        $sharedEntity = new TestTraitSharedEntity('shared');
+        $sharedEntity = new TestTraitSharedEntity('shared-trait');
         $this->em->persist($sharedEntity);
         $this->em->flush();
 
@@ -133,11 +119,11 @@ class SharedEntityFunctionalTest extends KernelTestCase
         $seService = static::$kernel->getContainer()->get('digital_ascetic.shared_entity_service');
 
         $remoteFromSource = $seService->getEntityFromSource(TestSharedEntity::class,
-          new Source('remote-origin', '12313'));
+            new Source('remote-origin', '12313'));
         $localFromSource = $seService->getEntityFromSource(TestSharedEntity::class,
-          new Source($seService->getOrigin(), $localId));
+            new Source($seService->getOrigin(), $localId));
         $globalFromSource = $seService->getEntityFromSource(TestSharedEntity::class,
-          new Source(null, '999'));
+            new Source(null, '999'));
 
 
         $this->assertNotNull($remoteFromSource);
@@ -172,7 +158,7 @@ class SharedEntityFunctionalTest extends KernelTestCase
 
         $serializer = $this->getSerializer();
 
-        $jsonSe = '{"id": 92090, "name": "remote-shared", "source": { "origin": "remote-origin", "id": "12313"}}';
+        $jsonSe = '{"id": "92090", "name": "remote-shared", "source": { "origin": "remote-origin", "id": "12313"}}';
 
         /** @var TestSharedEntity $desSharedEntity */
         $desSharedEntity = $serializer->deserialize($jsonSe, TestSharedEntity::class, 'json');
@@ -205,7 +191,7 @@ class SharedEntityFunctionalTest extends KernelTestCase
 
         $serializer = $this->getSerializer();
 
-        $jsonSe = '{"id": 92090, "name": "remote-shared", "source": { "origin": "remote-origin", "id": "12313"}}';
+        $jsonSe = '{"id": "92090", "name": "remote-shared", "source": { "origin": "remote-origin", "id": "12313"}}';
 
         /** @var TestSharedEntity $desSharedEntity */
         $desSharedEntity = $serializer->deserialize($jsonSe, TestTraitSharedEntity::class, 'json');
@@ -270,19 +256,19 @@ class SharedEntityFunctionalTest extends KernelTestCase
     {
         $sharedEntity = new TestSharedEntity('shared');
         $sharedEntity->setCode('local code');
-        $source = new Source('remote-origin', '12313');
+        $source = new Source('remote-origin', '99');
         $sharedEntity->setSource($source);
         $this->em->persist($sharedEntity);
 
         $sharedEntity2 = new TestSharedEntity('shared');
         $sharedEntity2->setCode('local code 2');
-        $source = new Source('remote-origin', '11111');
+        $source = new Source('remote-origin', '100');
         $sharedEntity2->setSource($source);
         $this->em->persist($sharedEntity2);
 
         $composedSharedEntity = new TestComposedSharedEntity('12345678');
         $composedSharedEntity->setSharedEntity($sharedEntity);
-        $composedSource = new Source('remote-origin', '49858');
+        $composedSource = new Source('remote-origin', '88');
         $composedSharedEntity->setSource($composedSource);
 
         $this->em->persist($composedSharedEntity);
@@ -294,9 +280,11 @@ class SharedEntityFunctionalTest extends KernelTestCase
         $this->em->detach($sharedEntity2);
         $this->em->detach($composedSharedEntity);
 
+        $this->assertEquals($sharedEntity->getId(), $composedSharedEntity->getSharedEntity()->getId());
+
         $serializer = $this->getSerializer();
 
-        $jsonSe = '{"id": "49858", "source": { "origin": "remote-origin", "id": "49858"}, "sharedEntity": {"id": "11111", "name": "remote-shared", "source": { "origin": "remote-origin", "id": "11111"}}}';
+        $jsonSe = '{"id": "49858", "source": { "origin": "remote-origin", "id": "88"}, "sharedEntity": {"id": "11111", "name": "remote-shared", "source": { "origin": "remote-origin", "id": "100"}}}';
 
         /** @var TestComposedSharedEntity $desComposed */
         $desComposed = $serializer->deserialize($jsonSe, TestComposedSharedEntity::class, 'json');
@@ -307,8 +295,8 @@ class SharedEntityFunctionalTest extends KernelTestCase
         $this->assertNotNull($desComposed->getSharedEntity());
         $this->assertInstanceOf(TestSharedEntity::class, $desComposed->getSharedEntity());
         $this->assertNotNull($desComposed->getSharedEntity()->getSource());
-        $this->assertEquals('11111', $desComposed->getSharedEntity()->getSource()->getId());
-
+        $this->assertEquals($sharedEntity2->getSource()->getId(), $desComposed->getSharedEntity()->getSource()->getId());
+        $this->assertEquals($sharedEntity2->getId(), $desComposed->getSharedEntity()->getId());
     }
 
     /**
@@ -318,7 +306,7 @@ class SharedEntityFunctionalTest extends KernelTestCase
     public function testDeserializeLocalSharedEntityWithoutSource()
     {
         $sharedEntity = new TestSharedEntity('shared');
-        $sharedEntity->setCode('local code');
+        $sharedEntity->setCode('code');
         $source = new Source('remote-origin', '12313');
         $sharedEntity->setSource($source);
         $this->em->persist($sharedEntity);
@@ -330,7 +318,7 @@ class SharedEntityFunctionalTest extends KernelTestCase
         $id = $sharedEntity->getId();
 
         // Omit source in serialized version but use local correct id
-        $jsonSe = '{"id": "'.$id.'", "name": "remote-shared"}';
+        $jsonSe = '{"id": ' . $id . ', "name": "remote-shared"}';
 
         /** @var TestSharedEntity $desSharedEntity */
         $desSharedEntity = $serializer->deserialize($jsonSe, TestSharedEntity::class, 'json');
@@ -339,7 +327,7 @@ class SharedEntityFunctionalTest extends KernelTestCase
         $this->assertInstanceOf(TestSharedEntity::class, $desSharedEntity);
         $this->assertEquals($sharedEntity->getId(), $desSharedEntity->getId());
         $this->assertEquals('remote-shared', $desSharedEntity->getName());
-        $this->assertEquals('local code', $desSharedEntity->getCode());
+        $this->assertEquals('code', $desSharedEntity->getCode());
 
     }
 
@@ -366,7 +354,7 @@ class SharedEntityFunctionalTest extends KernelTestCase
     }
 
     /**
-     * Deserialize a locally persisted local shared entity 
+     * Deserialize a locally persisted local shared entity
      */
     public function testDeserializeLocalSharedEntity()
     {
@@ -377,7 +365,7 @@ class SharedEntityFunctionalTest extends KernelTestCase
         $persistedId = $localSharedEntity->getId();
         $this->em->detach($localSharedEntity);
 
-        $localSerialized = '{"id": "999999", "name": "remote-shared", "source": { "origin": "'.$this->getLocalOrigin().'", "id": "'.$persistedId.'"}}';
+        $localSerialized = '{"id": "999999", "name": "remote-shared", "source": { "origin": "' . $this->getLocalOrigin() . '", "id": "' . $persistedId . '"}}';
 
         $serializer = $this->getSerializer();
 
@@ -407,7 +395,7 @@ class SharedEntityFunctionalTest extends KernelTestCase
 
         $serializer = $this->getSerializer();
 
-        $serializedComposedSE = '{"id": "49858", "source": { "origin": "remote-origin", "id": "49858"}, "sharedEntity": {"id": "999999", "name": "local shared", "source": { "origin": "'.$this->getLocalOrigin().'", "id": "'.$persistedId.'"}}}';
+        $serializedComposedSE = '{"id": "49858", "source": { "origin": "remote-origin", "id": "49858"}, "sharedEntity": {"id": "999999", "name": "local shared", "source": { "origin": "' . $this->getLocalOrigin() . '", "id": "' . $persistedId . '"}}}';
 
         /** @var TestComposedSharedEntity $composedSE */
         $composedSE = $serializer->deserialize($serializedComposedSE, TestComposedSharedEntity::class, 'json');
@@ -434,7 +422,7 @@ class SharedEntityFunctionalTest extends KernelTestCase
 
         $serializer = $this->getSerializer();
 
-        $jsonSe = '{"id": "49858", "source": { "origin": "remote-origin", "id": "49858"}, "sharedEntity": {"id": "11111", "source": { "origin": "remote-origin", "id": "11111"}, "composedEntity": {"id": "49858", "source": { "origin": "remote-origin", "id": "49858"}}}}';
+        $jsonSe = '{"id": "251282", "source": { "origin": "remote-origin", "id": "251282"}, "sharedEntity": {"id": "11111", "source": { "origin": "remote-origin", "id": "11111"}, "composedEntity": {"id": "251282", "source": { "origin": "remote-origin", "id": "251282"}}}}';
 
         /** @var TestComposedSharedEntity $desComposed */
         $desComposed = $serializer->deserialize($jsonSe, TestComposedSharedEntity::class, 'json');
@@ -446,6 +434,11 @@ class SharedEntityFunctionalTest extends KernelTestCase
         $this->assertNotNull($desComposed->getSharedEntity()->getSource());
         $this->assertEquals('11111', $desComposed->getSharedEntity()->getSource()->getId());
         $this->assertNotNull($desComposed->getSharedEntity()->getComposedEntity());
+        $this->assertInstanceOf(TestComposedSharedEntity::class, $desComposed->getSharedEntity()->getComposedEntity());
+
+        /**
+         * @todo We can control object instantation so our cache is never called
+         */
         $this->assertSame($desComposed, $desComposed->getSharedEntity()->getComposedEntity());
 
     }
@@ -453,7 +446,7 @@ class SharedEntityFunctionalTest extends KernelTestCase
     /**
      * {@inheritDoc}
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
 
@@ -472,23 +465,13 @@ class SharedEntityFunctionalTest extends KernelTestCase
         }
     }
 
-    private function getSerializer()
+    private function getSerializer(): Serializer
     {
 
-        $namingStrategy = new SerializedNameAnnotationStrategy(new IdenticalPropertyNamingStrategy());
+        $container = static::getContainer();
 
-        $serializer = new Serializer(
-          new MetadataFactory(new AnnotationDriver(new AnnotationReader())),
-          new HandlerRegistry(),
-          new DoctrineSharedEntityConstructor(
-            static::$kernel->getContainer()->get('doctrine'),
-            new UnserializeObjectConstructor(),
-            static::$kernel->getContainer()->get('digital_ascetic.shared_entity_service'),
-            static::$kernel->getContainer()->get('logger')
-          ),
-          new Map(array('json' => new JsonSerializationVisitor($namingStrategy))),
-          new Map(array('json' => new JsonDeserializationVisitor($namingStrategy)))
-        );
+        /** @var Serializer $serializer */
+        $serializer = $container->get('serializer');
 
         return $serializer;
 

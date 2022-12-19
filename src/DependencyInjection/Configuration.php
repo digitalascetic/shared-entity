@@ -9,10 +9,10 @@ class Configuration implements ConfigurationInterface {
 
   public function getConfigTreeBuilder() {
 
-    $treeBuilder = new TreeBuilder();
+    $treeBuilder = new TreeBuilder('digital_ascetic_shared_entity');
 
     // Configuration name must match bundle name DigitalAsceticSharedEntity[Bundle]
-    $rootNode = $treeBuilder->root('digital_ascetic_shared_entity');
+    $rootNode = $treeBuilder->getRootNode();
 
     $rootNode
       ->children()

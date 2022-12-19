@@ -4,7 +4,7 @@ namespace DigitalAscetic\SharedEntityBundle\EventListener;
 
 
 use DigitalAscetic\SharedEntityBundle\Entity\SharedEntity;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class SharedEntityEvent extends Event
 {
@@ -28,5 +28,5 @@ class SharedEntityEvent extends Event
     {
         return $this->entity;
     }
-    
+
 }

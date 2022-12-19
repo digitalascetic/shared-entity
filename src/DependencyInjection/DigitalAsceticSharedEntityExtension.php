@@ -4,7 +4,7 @@ namespace DigitalAscetic\SharedEntityBundle\DependencyInjection;
 
 use DigitalAscetic\SharedEntityBundle\EventListener\SharedEntityDoctrineSubscriber;
 use DigitalAscetic\SharedEntityBundle\EventListener\SharedEntitySubscriber;
-use DigitalAscetic\SharedEntityBundle\Service\DoctrineSharedEntityConstructor;
+use DigitalAscetic\SharedEntityBundle\Serializer\Normalizer\SharedEntityDenormalizer;
 use DigitalAscetic\SharedEntityBundle\Service\SharedEntityService;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\Definition;
@@ -32,53 +32,33 @@ class DigitalAsceticSharedEntityExtension extends Extension implements PrependEx
             $container->setAlias(SharedEntityService::class, 'digital_ascetic.shared_entity_service');
 
             // SharedEntity events handler
-            $sharedEntitySub = new Definition(
-                SharedEntitySubscriber::class
-            );
-            $sharedEntitySub->addArgument(new Reference('service_container'));
+            $sharedEntitySub = new Definition(SharedEntitySubscriber::class);
             $sharedEntitySub->addArgument($config['origin']);
             $sharedEntitySub->addArgument(new Reference('doctrine.orm.entity_manager'));
             $sharedEntitySub->addTag(
                 'kernel.event_listener',
                 array('event' => 'digital_ascetic.shared.entity.persist', 'method' => 'onSharedEntityPersist')
             );
-            $container->setDefinition(
-                'digital_ascetic.shared_entity.persist_subscriber',
-                $sharedEntitySub
-            );
+            $container->setDefinition('digital_ascetic.shared_entity.persist_subscriber', $sharedEntitySub);
 
 
             // SharedEntity Doctrine Subscriber, handles SharedEntity events on Doctrine
             // SharedEntity events
-            $sharedEntityDctr = new Definition(
-                SharedEntityDoctrineSubscriber::class
-            );
+            $sharedEntityDctr = new Definition(SharedEntityDoctrineSubscriber::class);
             $sharedEntityDctr->addArgument(new Reference('event_dispatcher'));
             $sharedEntityDctr->addArgument($config['index_source']);
             $sharedEntityDctr->setPublic(false);
             $sharedEntityDctr->addTag('doctrine.event_subscriber');
-            $container->setDefinition(
-                'digital_ascetic.shared_entity.sharedentity_doctrine',
-                $sharedEntityDctr
-            );
+            $container->setDefinition('digital_ascetic.shared_entity.sharedentity_doctrine', $sharedEntityDctr);
 
-
-            // SharedEntity JMSSerializer ObjectConstructor
-            $sharedEntityConstr = new Definition(
-                DoctrineSharedEntityConstructor::class
-            );
-            $sharedEntityConstr->addArgument(new Reference('doctrine'));
-            $sharedEntityConstr->addArgument(new Reference('jms_serializer.unserialize_object_constructor'));
-            $sharedEntityConstr->addArgument(new Reference('digital_ascetic.shared_entity_service'));
-            $sharedEntityConstr->addArgument(new Reference('logger'));
-            $sharedEntityConstr->setPublic(false);
-            $container->setDefinition(
-                'digital_ascetic.doctrine_shared_entity_constructor',
-                $sharedEntityConstr
-            );
+            $deNormServ = new Definition(SharedEntityDenormalizer::class);
+            $deNormServ->addArgument(new Reference('digital_ascetic.shared_entity_service'));
+            $deNormServ->addArgument(new Reference('serializer.normalizer.object'));
+            $deNormServ->addArgument(new Reference('doctrine'));
+            $deNormServ->addArgument(new Reference('logger'));
+            $deNormServ->addTag('serializer.normalizer');
+            $container->setDefinition('digital_ascetic.shared_entity.serializer.denormalizer', $deNormServ);
         }
-
-
     }
 
     /**

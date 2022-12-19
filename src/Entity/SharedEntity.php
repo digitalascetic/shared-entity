@@ -5,9 +5,9 @@ namespace DigitalAscetic\SharedEntityBundle\Entity;
 interface SharedEntity
 {
     /**
-     * @return Source
+     * @return Source|null
      */
-    public function getSource();
+    public function getSource(): ?Source;
 
     /**
      * @param Source $source

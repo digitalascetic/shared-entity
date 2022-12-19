@@ -1,45 +1,41 @@
 <?php
 
+namespace DigitalAscetic\SharedEntityBundle\Test\Functional;
+
+use DigitalAscetic\SharedEntityBundle\DigitalAsceticSharedEntityBundle;
+use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
+use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
+use Symfony\Bundle\MonologBundle\MonologBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\Kernel;
 
 class AppKernel extends Kernel
 {
-    private $config;
+    private const CONFIG_EXTS = '.{php,xml,yaml,yml}';
 
-    public function __construct($config)
+    public function __construct(string $environment, bool $debug)
     {
-        parent::__construct('test', true);
-        $fs = new Filesystem();
-        if (!$fs->isAbsolutePath($config)) {
-            $config = __DIR__.'/Resources/config/config_'.$config.'.yml';
-        }
-        if (!file_exists($config)) {
-            throw new \RuntimeException(sprintf('The config file "%s" does not exist.', $config));
-        }
-        $this->config = $config;
+        parent::__construct('test', false);
     }
 
-    public function registerBundles()
+    public function registerBundles(): iterable
     {
-        return array(
-          new \Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
-          new \Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
-          new \Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
-          new \DigitalAscetic\SharedEntityBundle\DigitalAsceticSharedEntityBundle(),
-          new JMS\SerializerBundle\JMSSerializerBundle(),
-          new \Symfony\Bundle\MonologBundle\MonologBundle(),
-        );
+        return [
+            new FrameworkBundle(),
+            new MonologBundle(),
+            new DoctrineBundle(),
+            new DigitalAsceticSharedEntityBundle(),
+        ];
     }
 
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
-        $loader->load($this->config);
+        $confDir = $this->getProjectDir() . '/tests/Functional/config';
+        $loader->load($confDir . '/{packages}/*' . self::CONFIG_EXTS, 'glob');
     }
 
-    public function getCacheDir()
+    public function getCacheDir(): string
     {
-        return sys_get_temp_dir().'/DigitalAsceticSharedEntityBundle';
+        return sys_get_temp_dir() . '/DigitalAsceticSharedEntityBundle';
     }
 }

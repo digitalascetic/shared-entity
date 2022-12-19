@@ -4,7 +4,6 @@ namespace DigitalAscetic\SharedEntityBundle\EventListener;
 
 use DigitalAscetic\SharedEntityBundle\Entity\Source;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -13,24 +12,17 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class SharedEntitySubscriber implements EventSubscriberInterface
 {
+    private string $origin;
 
-    /** @var  ContainerInterface */
-    private $container;
-
-    /** @var string */
-    private $origin;
-
-    /** @var EntityManagerInterface */
-    private $em;
+    private EntityManagerInterface $em;
 
     /**
      * SharedEntityPersistSubscriber constructor.
-     * @param ContainerInterface $container
      * @param string $origin
+     * @param EntityManagerInterface $em
      */
-    public function __construct(ContainerInterface $container, $origin, EntityManagerInterface $em)
+    public function __construct(string $origin, EntityManagerInterface $em)
     {
-        $this->container = $container;
         $this->origin = $origin;
         $this->em = $em;
     }
