@@ -7,8 +7,8 @@ use DigitalAscetic\SharedEntityBundle\Entity\Source;
 use DigitalAscetic\SharedEntityBundle\Service\SharedEntityService;
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
-use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
@@ -58,6 +58,8 @@ class SharedEntityDenormalizer implements DenormalizerInterface
             if ($object) {
                 $this->logger->info('Updating existing shared entity with source ' . $object->getSource());
 
+                $this->setConstructorArguments($object, $data);
+
                 $context = array_merge(
                     [
                         AbstractNormalizer::OBJECT_TO_POPULATE => $object
@@ -76,20 +78,21 @@ class SharedEntityDenormalizer implements DenormalizerInterface
                 $this->cache[$type . $source->getUniqueId()] = $object;
             }
 
+            return $object;
         } else if (array_key_exists('id', $data) && $data['id']) {
             $object = $this->registry->getRepository($type)->find($data['id']);
 
             if ($object) {
+
+                $this->setConstructorArguments($object, $data);
+
                 $context = array_merge(
+                    $context,
                     [
-                        AbstractNormalizer::OBJECT_TO_POPULATE => $object,
-                        AbstractObjectNormalizer::DEEP_OBJECT_TO_POPULATE => true
-                    ],
-                    $context
+                        AbstractNormalizer::OBJECT_TO_POPULATE => $object
+                    ]
                 );
             }
-
-            return $this->normalizer->denormalize($data, $type, $format, $context);
         }
 
         return $this->normalizer->denormalize($data, $type, $format, $context);
@@ -107,6 +110,31 @@ class SharedEntityDenormalizer implements DenormalizerInterface
         }
 
         return $object;
+    }
+
+    /**
+     * In order to avoid MissingConstructorArgumentsException we need to set constructor arguments if are missing
+     *
+     * https://symfony.com/doc/current/components/serializer.html#handling-constructor-arguments
+     *
+     * @param mixed $object
+     * @param $data
+     * @return void
+     * @throws \ReflectionException
+     */
+    private function setConstructorArguments(mixed $object, &$data)
+    {
+        if (is_object($object)) {
+            $refClass = new \ReflectionClass($object);
+            $constructorArguments = $refClass->getConstructor()->getParameters();
+            $accessor = PropertyAccess::createPropertyAccessor();
+
+            foreach ($constructorArguments as $argument) {
+                if (!$argument->allowsNull() && !array_key_exists($argument->getName(), $data)) {
+                    $data[$argument->getName()] = $accessor->getValue($object, $argument->getName());
+                }
+            }
+        }
     }
 
     private function hasSourceData($data): bool

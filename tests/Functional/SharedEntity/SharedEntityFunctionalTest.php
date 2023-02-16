@@ -8,6 +8,7 @@ use DigitalAscetic\SharedEntityBundle\Service\SharedEntityService;
 use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
 class SharedEntityFunctionalTest extends KernelTestCase
@@ -414,6 +415,26 @@ class SharedEntityFunctionalTest extends KernelTestCase
 
     }
 
+    public function testDeserializeSharedEntityWithoutConstructorArguments()
+    {
+        $localSharedEntity = new TestSharedEntity('default shared constructor');
+        $this->em->persist($localSharedEntity);
+        $this->em->flush();
+        $persistedId = $localSharedEntity->getId();
+        $this->em->detach($localSharedEntity);
+
+        $serializer = $this->getSerializer();
+
+        $jsonSe = '{"phone": "222333999", "sharedEntity": {"id": "' . $persistedId . '", "code" : "constructor"}}';
+
+        /** @var TestComposedSharedEntity $desComposed */
+        $desComposed = $serializer->deserialize($jsonSe, TestComposedSharedEntity::class, 'json', [ObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true]);
+        $this->assertNotNull($desComposed);
+        $this->assertInstanceOf(TestComposedSharedEntity::class, $desComposed);
+        $this->assertEquals($persistedId, $desComposed->getSharedEntity()->getId());
+        $this->assertEquals('default shared constructor', $desComposed->getSharedEntity()->getName());
+    }
+
     /**
      * Deserialize a non already persisted entity with a circular reference (use cache)
      */
@@ -422,7 +443,7 @@ class SharedEntityFunctionalTest extends KernelTestCase
 
         $serializer = $this->getSerializer();
 
-        $jsonSe = '{"id": "251282", "source": { "origin": "remote-origin", "id": "251282"}, "sharedEntity": {"id": "11111", "source": { "origin": "remote-origin", "id": "11111"}, "composedEntity": {"id": "251282", "source": { "origin": "remote-origin", "id": "251282"}}}}';
+        $jsonSe = '{"id": "251282", "source": { "origin": "remote-origin", "id": "251282"}, "sharedEntity": {"id": "11111", "name": "test", "source": { "origin": "remote-origin", "id": "11111"}, "composedEntity": {"id": "251282", "source": { "origin": "remote-origin", "id": "251282"}}}}';
 
         /** @var TestComposedSharedEntity $desComposed */
         $desComposed = $serializer->deserialize($jsonSe, TestComposedSharedEntity::class, 'json');

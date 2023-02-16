@@ -1,5 +1,9 @@
 # CHANGELOG
 
+6.2.2
+-----
+* Fixed SharedEntityDenormalizer MissingConstructorArgumentsException
+
 6.2.1
 -----
 * Fixed SharedEntityDenormalizer return denormalize data.
