@@ -148,6 +148,10 @@ class SharedEntityDenormalizer implements DenormalizerInterface
 
     public function supportsDenormalization(mixed $data, string $type, string $format = null)
     {
+        if (str_ends_with($type, '[]')) {
+            return false;
+        }
+
         return in_array(SharedEntity::class, class_implements($type));
     }
 }

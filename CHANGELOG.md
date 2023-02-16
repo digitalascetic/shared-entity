@@ -1,5 +1,9 @@
 # CHANGELOG
 
+6.2.3
+-----
+* Avoid error with ArrayDenormalizer
+
 6.2.2
 -----
 * Fixed SharedEntityDenormalizer MissingConstructorArgumentsException
