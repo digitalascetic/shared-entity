@@ -1,5 +1,9 @@
 # CHANGELOG
 
+6.2.5
+-----
+* Avoid remove id from object.
+
 6.2.4
 -----
 * Handle object at SharedEntityDenormalizer

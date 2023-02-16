@@ -53,7 +53,7 @@ class SharedEntityDenormalizer implements DenormalizerInterface
                 $source = new Source($origin, $data['source']['id']);
             } else {
                 // Always avoid to deserialize the id to avoid update clashes, could be a remote id, just trust source
-                unset($data->{'id'});
+               // unset($data->{'id'});
 
                 /** @var SharedEntity $data */
                 $source = $data->getSource();
