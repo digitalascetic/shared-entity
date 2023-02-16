@@ -43,13 +43,21 @@ class SharedEntityDenormalizer implements DenormalizerInterface
         // Just handle entities having source data
         if ($this->hasSourceData($data)) {
 
-            // Always avoid to deserialize the id to avoid update clashes, could be a remote id, just trust source
-            unset($data['id']);
+            if (is_array($data)) {
+                // Always avoid to deserialize the id to avoid update clashes, could be a remote id, just trust source
+                unset($data['id']);
 
-            // origin might be absent for globally shared entities
-            $origin = $data['source']['origin'] ?? null;
+                // origin might be absent for globally shared entities
+                $origin = $data['source']['origin'] ?? null;
 
-            $source = new Source($origin, $data['source']['id']);
+                $source = new Source($origin, $data['source']['id']);
+            } else {
+                // Always avoid to deserialize the id to avoid update clashes, could be a remote id, just trust source
+                unset($data->{'id'});
+
+                /** @var SharedEntity $data */
+                $source = $data->getSource();
+            }
 
             // See if the shared entity is already in local db or in cache
             $object = $this->getEntityFromSource($type, $source);
@@ -79,7 +87,7 @@ class SharedEntityDenormalizer implements DenormalizerInterface
             }
 
             return $object;
-        } else if (array_key_exists('id', $data) && $data['id']) {
+        } else if (is_array($data) && array_key_exists('id', $data) && $data['id']) {
             $object = $this->registry->getRepository($type)->find($data['id']);
 
             if ($object) {
@@ -92,6 +100,25 @@ class SharedEntityDenormalizer implements DenormalizerInterface
                         AbstractNormalizer::OBJECT_TO_POPULATE => $object
                     ]
                 );
+            }
+        } else if (is_object($data) && property_exists($data, 'id')) {
+            $accessor = PropertyAccess::createPropertyAccessor();
+            $id = $accessor->getValue($data, 'id');
+
+            if ($id) {
+                $object = $this->registry->getRepository($type)->find($id);
+
+                if ($object) {
+
+                    $this->setConstructorArguments($object, $data);
+
+                    $context = array_merge(
+                        $context,
+                        [
+                            AbstractNormalizer::OBJECT_TO_POPULATE => $object
+                        ]
+                    );
+                }
             }
         }
 
@@ -139,11 +166,22 @@ class SharedEntityDenormalizer implements DenormalizerInterface
 
     private function hasSourceData($data): bool
     {
-        if (!isset($data['source']) || !isset($data['source']['id'])) {
-            return false;
+        if (is_array($data)) {
+            if (isset($data['source']) && isset($data['source']['id'])) {
+                return true;
+            }
+        } else if (is_object($data) && property_exists($data, 'source')) {
+            $accessor = PropertyAccess::createPropertyAccessor();
+            $source = $accessor->getValue($data, 'source');
+
+            if ($source instanceof Source) {
+                if ($source->getOrigin() && $source->getId()) {
+                    return true;
+                }
+            }
         }
 
-        return true;
+        return false;
     }
 
     public function supportsDenormalization(mixed $data, string $type, string $format = null)

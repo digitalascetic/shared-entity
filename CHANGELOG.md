@@ -1,5 +1,9 @@
 # CHANGELOG
 
+6.2.4
+-----
+* Handle object at SharedEntityDenormalizer
+
 6.2.3
 -----
 * Avoid error with ArrayDenormalizer
