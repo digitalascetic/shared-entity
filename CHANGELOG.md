@@ -1,5 +1,9 @@
 # CHANGELOG
 
+6.2.1
+-----
+* Fixed SharedEntityDenormalizer return denormalize data.
+
 6.2.0
 -----
 * Symfony 6.2 compatibility.

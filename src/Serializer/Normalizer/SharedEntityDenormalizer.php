@@ -89,10 +89,10 @@ class SharedEntityDenormalizer implements DenormalizerInterface
                 );
             }
 
-            $object = $this->normalizer->denormalize($data, $type, $format, $context);
+            return $this->normalizer->denormalize($data, $type, $format, $context);
         }
 
-        return $object;
+        return $this->normalizer->denormalize($data, $type, $format, $context);
     }
 
     private function getEntityFromSource($entityName, Source $source)
