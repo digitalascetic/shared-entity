@@ -1,5 +1,9 @@
 # CHANGELOG
 
+6.2.6
+-----
+* Removed setConstructorArguments from SharedEntityDenormalizer
+
 6.2.5
 -----
 * Avoid remove id from object.

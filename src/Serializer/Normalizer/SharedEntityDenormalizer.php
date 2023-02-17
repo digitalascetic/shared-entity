@@ -66,7 +66,7 @@ class SharedEntityDenormalizer implements DenormalizerInterface
             if ($object) {
                 $this->logger->info('Updating existing shared entity with source ' . $object->getSource());
 
-                $this->setConstructorArguments($object, $data);
+                //$this->setConstructorArguments($object, $data);
 
                 $context = array_merge(
                     [
@@ -92,7 +92,7 @@ class SharedEntityDenormalizer implements DenormalizerInterface
 
             if ($object) {
 
-                $this->setConstructorArguments($object, $data);
+               // $this->setConstructorArguments($object, $data);
 
                 $context = array_merge(
                     $context,
@@ -110,7 +110,7 @@ class SharedEntityDenormalizer implements DenormalizerInterface
 
                 if ($object) {
 
-                    $this->setConstructorArguments($object, $data);
+                    //$this->setConstructorArguments($object, $data);
 
                     $context = array_merge(
                         $context,
