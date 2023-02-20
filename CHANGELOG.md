@@ -1,5 +1,9 @@
 # CHANGELOG
 
+6.2.7
+-----
+* SharedEntityDenormalizer default context.
+
 6.2.6
 -----
 * Removed setConstructorArguments from SharedEntityDenormalizer

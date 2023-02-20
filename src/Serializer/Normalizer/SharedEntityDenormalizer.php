@@ -9,6 +9,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
@@ -36,6 +37,8 @@ class SharedEntityDenormalizer implements DenormalizerInterface
                 AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object, $format, $context) {
                     return $object->getId();
                 },
+                AbstractObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true,
+                AbstractObjectNormalizer::ENABLE_MAX_DEPTH => true
             ],
             $context
         );
@@ -53,7 +56,7 @@ class SharedEntityDenormalizer implements DenormalizerInterface
                 $source = new Source($origin, $data['source']['id']);
             } else {
                 // Always avoid to deserialize the id to avoid update clashes, could be a remote id, just trust source
-               // unset($data->{'id'});
+                // unset($data->{'id'});
 
                 /** @var SharedEntity $data */
                 $source = $data->getSource();
@@ -92,7 +95,7 @@ class SharedEntityDenormalizer implements DenormalizerInterface
 
             if ($object) {
 
-               // $this->setConstructorArguments($object, $data);
+                // $this->setConstructorArguments($object, $data);
 
                 $context = array_merge(
                     $context,
