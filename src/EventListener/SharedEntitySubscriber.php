@@ -2,6 +2,7 @@
 
 namespace DigitalAscetic\SharedEntityBundle\EventListener;
 
+use DigitalAscetic\SharedEntityBundle\Entity\SharedEntity;
 use DigitalAscetic\SharedEntityBundle\Entity\Source;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -53,12 +54,18 @@ class SharedEntitySubscriber implements EventSubscriberInterface
     public function onSharedEntityPersist(SharedEntityEvent $event)
     {
         $sharedEntity = $event->getEntity();
-        $source = new Source($this->origin, $sharedEntity->getId());
 
-        $sharedEntity->setSource($source);
+        if ($sharedEntity->getId()) {
 
-        $this->em->persist($sharedEntity);
-        $this->em->flush();
+            $source = new Source($this->origin, $sharedEntity->getId());
+
+            $sharedEntity->setSource($source);
+
+            $this->em->persist($sharedEntity);
+
+            $this->em->persist($sharedEntity);
+            $this->em->flush();
+        }
     }
 
 }

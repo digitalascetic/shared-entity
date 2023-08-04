@@ -5,6 +5,7 @@ doctrine:
       default:
         driver: "pdo_sqlite"
         memory: true
+        logging: true
   orm:
     auto_generate_proxy_classes: true
     entity_managers:

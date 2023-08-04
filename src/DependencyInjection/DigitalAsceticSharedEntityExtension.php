@@ -48,7 +48,8 @@ class DigitalAsceticSharedEntityExtension extends Extension implements PrependEx
             $sharedEntityDctr->addArgument(new Reference('event_dispatcher'));
             $sharedEntityDctr->addArgument($config['index_source']);
             $sharedEntityDctr->setPublic(false);
-            $sharedEntityDctr->addTag('doctrine.event_subscriber');
+            $sharedEntityDctr->addTag('doctrine.event_listener', ['event' => 'postPersist']);
+            $sharedEntityDctr->addTag('doctrine.event_listener', ['event' => 'loadClassMetadata']);
             $container->setDefinition('digital_ascetic.shared_entity.sharedentity_doctrine', $sharedEntityDctr);
 
             $deNormServ = new Definition(SharedEntityDenormalizer::class);
@@ -68,7 +69,8 @@ class DigitalAsceticSharedEntityExtension extends Extension implements PrependEx
      */
     public function prepend(ContainerBuilder $container)
     {
-
+        $configs = $container->getExtensionConfig($this->getAlias());
+        $config = $this->processConfiguration(new Configuration(), $configs);
         $bundles = $container->getParameter('kernel.bundles');
 
         if (!isset($bundles['FrameworkBundle'])) {
@@ -82,7 +84,23 @@ class DigitalAsceticSharedEntityExtension extends Extension implements PrependEx
                 "You must register DoctrineBundle in AppKernel in order to work with SharedEntityBundle"
             );
         }
+        if ($config['enabled']) {
+            $doctrineConfig = array(
+                'orm' => array(
+                    'mappings' => array(
+                        'shared_entity' => array(
+                            'type' => 'attribute',
+                            'is_bundle' => false,
+                            'prefix' => 'DigitalAscetic\SharedEntityBundle\Entity',
+                            'dir' => "%kernel.project_dir%/vendor/digitalascetic/shared-entity/src/Entity",
+                            'alias' => 'DigitalAsceticSharedEntity',
+                        ),
+                    ),
+                ),
+            );
 
+            $container->prependExtensionConfig('doctrine', $doctrineConfig);
+        }
     }
 
 }

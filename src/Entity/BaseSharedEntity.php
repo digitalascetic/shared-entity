@@ -15,10 +15,6 @@ abstract class BaseSharedEntity implements SharedEntity
     /**
      * @var int|null
      *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
-     * @Groups({"id"})
      */
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
@@ -27,10 +23,8 @@ abstract class BaseSharedEntity implements SharedEntity
     protected ?int $id = null;
 
     /**
-     * @var Source|nul
+     * @var Source|null
      *
-     * @ORM\Embedded(class = "DigitalAscetic\SharedEntityBundle\Entity\Source")
-     * @Groups({"shared_entity"})
      */
     #[ORM\Embedded(class: 'DigitalAscetic\SharedEntityBundle\Entity\Source')]
     #[Groups('shared_entity')]

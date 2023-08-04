@@ -4,17 +4,15 @@ namespace DigitalAscetic\SharedEntityBundle\EventListener;
 
 use DigitalAscetic\SharedEntityBundle\Entity\BaseSharedEntity;
 use DigitalAscetic\SharedEntityBundle\Entity\SharedEntity;
-use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
-use Doctrine\ORM\Event\LifecycleEventArgs;
-use Doctrine\ORM\Events;
+use Doctrine\ORM\Event\PostPersistEventArgs;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Class SharedEntityDoctrineSubscriber
  * @package DigitalAscetic\SharedEntityBundle\EventListener
  */
-class SharedEntityDoctrineSubscriber implements EventSubscriber
+class SharedEntityDoctrineSubscriber
 {
 
     /** @var  EventDispatcherInterface */
@@ -34,16 +32,6 @@ class SharedEntityDoctrineSubscriber implements EventSubscriber
         $this->addIndexForSource = $addIndexForSource;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getSubscribedEvents()
-    {
-        return array(
-            Events::postPersist,
-            Events::loadClassMetadata,
-        );
-    }
 
     /**
      * @param LoadClassMetadataEventArgs $eventArgs
@@ -71,9 +59,9 @@ class SharedEntityDoctrineSubscriber implements EventSubscriber
     }
 
     /**
-     * @param LifecycleEventArgs $args
+     * @param PostPersistEventArgs $args
      */
-    public function postPersist(LifecycleEventArgs $args)
+    public function postPersist(PostPersistEventArgs $args)
     {
 
         /** @var SharedEntity $entity */

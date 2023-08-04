@@ -97,7 +97,7 @@ class SharedEntityFunctionalTest extends KernelTestCase
         $source = new Source('remote-origin', '12313');
         $remoteSE->setSource($source);
 
-        $localSE = new TestSharedEntity('local');
+        $localSE = new TestSharedEntity('edu');
 
         $globalSE = new TestSharedEntity('global');
         $sourceGlobal = new Source(null, '999');
@@ -112,6 +112,7 @@ class SharedEntityFunctionalTest extends KernelTestCase
 
         $remoteId = $remoteSE->getId();
         $localId = $localSE->getId();
+
         $globalId = $globalSE->getId();
 
         $this->em->clear();
@@ -126,6 +127,12 @@ class SharedEntityFunctionalTest extends KernelTestCase
         $globalFromSource = $seService->getEntityFromSource(TestSharedEntity::class,
             new Source(null, '999'));
 
+
+        $entities = $this->em->getRepository(TestSharedEntity::class)->findAll();
+
+        foreach ($entities as $entity) {
+            var_dump($entity);
+        }
 
         $this->assertNotNull($remoteFromSource);
         $this->assertNotNull($localFromSource);

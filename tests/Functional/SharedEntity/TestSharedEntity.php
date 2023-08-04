@@ -10,8 +10,6 @@ use Doctrine\ORM\Mapping as ORM;
  * Class TestSharedEntity
  * @package DigitalAscetic\SharedEntityBundle\Functional\SharedEntity
  *
- * @ORM\Table()
- * @ORM\Entity()
  */
 #[ORM\Table]
 #[ORM\Entity]
@@ -21,9 +19,6 @@ class TestSharedEntity implements SharedEntity
     /**
      * @var int|null
      *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
@@ -33,7 +28,6 @@ class TestSharedEntity implements SharedEntity
     /**
      * @var string|null
      *
-     * @ORM\Column(name="name", type="string", length=255, nullable=true)
      */
     #[ORM\Column(name: 'name', type: 'string', nullable: true)]
     private ?string $name = null;
@@ -41,7 +35,6 @@ class TestSharedEntity implements SharedEntity
     /**
      * @var string|null
      *
-     * @ORM\Column(name="code", type="string", length=255, nullable=true)
      */
     #[ORM\Column(name: 'code', type: 'string', nullable: true)]
     private ?string $code = null;
@@ -49,16 +42,12 @@ class TestSharedEntity implements SharedEntity
     /**
      * @var Source|null
      *
-     * @ORM\Embedded(class = "DigitalAscetic\SharedEntityBundle\Entity\Source")
      */
     #[ORM\Embedded(class: 'DigitalAscetic\SharedEntityBundle\Entity\Source')]
     private ?Source $source = null;
 
     /**
      * @var TestComposedSharedEntity|null
-     *
-     * @ORM\ManyToOne(targetEntity="DigitalAscetic\SharedEntityBundle\Test\Functional\SharedEntity\TestComposedSharedEntity")
-     * @ORM\JoinColumn(name="composedSharedEntity_id", referencedColumnName="id", nullable=true)
      */
     #[ORM\ManyToOne(targetEntity: 'DigitalAscetic\SharedEntityBundle\Test\Functional\SharedEntity\TestComposedSharedEntity')]
     #[ORM\JoinColumn(name: 'composedSharedEntity_id', referencedColumnName: 'id', nullable: true)]

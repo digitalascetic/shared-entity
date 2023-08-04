@@ -17,8 +17,6 @@ trait SharedEntityTrait
     /**
      * @var Source
      *
-     * @ORM\Embedded(class = "DigitalAscetic\SharedEntityBundle\Entity\Source")
-     * @Groups({"shared_entity"})
      */
     #[ORM\Embedded(class: 'DigitalAscetic\SharedEntityBundle\Entity\Source')]
     #[Groups('shared_entity')]

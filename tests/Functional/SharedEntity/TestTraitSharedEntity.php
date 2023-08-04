@@ -17,8 +17,6 @@ use Doctrine\ORM\Mapping as ORM;
  * Class TestTraitSharedEntity
  * @package Functional\SharedEntity
  *
- * @ORM\Table()
- * @ORM\Entity()
  */
 #[ORM\Table]
 #[ORM\Entity]
@@ -28,10 +26,6 @@ class TestTraitSharedEntity implements SharedEntity
 
     /**
      * @var int|null
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
@@ -41,7 +35,6 @@ class TestTraitSharedEntity implements SharedEntity
     /**
      * @var string|null
      *
-     * @ORM\Column(name="name", type="string", length=255, nullable=true)
      */
     #[ORM\Column(name: 'name', type: 'string', nullable: true)]
     private ?string $name = null;
@@ -49,7 +42,6 @@ class TestTraitSharedEntity implements SharedEntity
     /**
      * @var string|null
      *
-     * @ORM\Column(name="code", type="string", length=255, nullable=true)
      */
     #[ORM\Column(name: 'code', type: 'string', nullable: true)]
     private ?string $code = null;

@@ -15,7 +15,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * Class Source
  * @package DigitalAscetic\SharedEntityBundle\Entity\Base\SharedEntity
  *
- * @ORM\Embeddable
  */
 #[ORM\Embeddable]
 class Source
@@ -42,8 +41,6 @@ class Source
     /**
      * @var string|null
      *
-     * @ORM\Column(name="origin", type="string", length=255, nullable=true)
-     * @Groups({"shared_entity"})
      */
     #[ORM\Column(name: 'origin', type: 'string', nullable: true)]
     #[Groups('shared_entity')]
@@ -52,8 +49,6 @@ class Source
     /**
      * @var string|null
      *
-     * @ORM\Column(name="id", type="string", length=255, nullable=true)
-     * @Groups({"shared_entity"})
      */
     #[ORM\Column(name: 'id', type: 'string', nullable: true)]
     #[Groups('shared_entity')]
@@ -61,10 +56,10 @@ class Source
 
     /**
      * Source constructor.
-     * @param string $origin
-     * @param string $id
+     * @param string|null $origin
+     * @param string|null $id
      */
-    public function __construct($origin, $id)
+    public function __construct(?string $origin = null, mixed $id = null)
     {
         $this->origin = $origin;
         $this->id = $id;
