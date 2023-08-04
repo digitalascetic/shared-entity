@@ -3,6 +3,7 @@
 namespace DigitalAscetic\SharedEntityBundle\EventListener;
 
 use DigitalAscetic\SharedEntityBundle\Entity\Source;
+use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -57,8 +58,15 @@ class SharedEntitySubscriber implements EventSubscriberInterface
 
         $sharedEntity->setSource($source);
 
-        $this->em->persist($sharedEntity);
-        $this->em->flush();
+        $dql = 'UPDATE ' . ClassUtils::getClass($sharedEntity) . ' s SET s.source.origin = :source_origin, s.source.id = :source_id WHERE s.id = :id';
+
+        $params = [
+            'source_origin' => $source->getOrigin(),
+            'source_id' => $source->getId(),
+            'id' => $sharedEntity->getId()
+        ];
+
+        $this->em->createQuery($dql)->setParameters($params)->execute();
     }
 
 }

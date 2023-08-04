@@ -1,5 +1,9 @@
 # CHANGELOG
 
+6.2.8
+-----
+* (SharedEntitySubscriber) Replaced persist entity using EntityManager by a DQL update query.
+
 6.2.7
 -----
 * SharedEntityDenormalizer default context.

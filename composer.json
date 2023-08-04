@@ -1,6 +1,6 @@
 {
   "name": "digitalascetic/shared-entity",
-  "version": "6.2.7",
+  "version": "6.2.8",
   "license": "MIT",
   "type": "symfony-bundle",
   "description": "Digital Ascetic Shared Entity Bundle",
