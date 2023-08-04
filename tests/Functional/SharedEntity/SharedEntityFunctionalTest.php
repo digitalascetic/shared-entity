@@ -127,13 +127,6 @@ class SharedEntityFunctionalTest extends KernelTestCase
         $globalFromSource = $seService->getEntityFromSource(TestSharedEntity::class,
             new Source(null, '999'));
 
-
-        $entities = $this->em->getRepository(TestSharedEntity::class)->findAll();
-
-        foreach ($entities as $entity) {
-            //var_dump($entity);
-        }
-
         $this->assertNotNull($remoteFromSource);
         $this->assertNotNull($localFromSource);
         $this->assertNotNull($globalFromSource);
