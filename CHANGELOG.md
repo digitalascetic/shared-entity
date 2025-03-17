@@ -1,5 +1,10 @@
 # CHANGELOG
 
+6.2.10
+-----
+* Avoid using cache for SharedEntityDenormalizer.
+* Avoid constructor missing arguments exception at deserializing object with only Source field.
+
 6.2.9
 -----
 * Higher prirority for SharedEntityDenormalizer.

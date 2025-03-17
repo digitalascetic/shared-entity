@@ -54,6 +54,8 @@ class SharedEntityDenormalizer implements DenormalizerInterface
                 // origin might be absent for globally shared entities
                 $origin = $data['source']['origin'] ?? null;
 
+                $onlySource = count(array_keys($data)) === 1;
+
                 $source = new Source($origin, $data['source']['id']);
             } else {
                 // Always avoid to deserialize the id to avoid update clashes, could be a remote id, just trust source
@@ -64,33 +66,35 @@ class SharedEntityDenormalizer implements DenormalizerInterface
             }
 
             // See if the shared entity is already in local db or in cache
-            $object = $this->getEntityFromSource($type, $source);
+            $objectToPopulate = $this->getEntityFromSource($type, $source);
 
             // If an actual entity could be found initialize and return it
-            if ($object) {
-                $this->logger->info('Updating existing shared entity with source ' . $object->getSource());
-
-                //$this->setConstructorArguments($object, $data);
+            if ($objectToPopulate) {
+                $this->logger->info('Updating existing shared entity with source ' . $objectToPopulate->getSource());
+                //$this->setConstructorArguments($objectToPopulate, $data);
 
                 $context = array_merge(
                     [
-                        AbstractNormalizer::OBJECT_TO_POPULATE => $object
+                        AbstractNormalizer::OBJECT_TO_POPULATE => $objectToPopulate,
                     ],
                     $context
                 );
-
-                $object = $this->normalizer->denormalize($data, $type, $format, $context);
-
             } else {
                 $instantiator = new Instantiator();
-                $object = $instantiator->instantiate($type);
+                $objectToPopulate = $instantiator->instantiate($type);
+
+                /** Trick to avoid constructor missing arguments exception at deserializing object with only Source field */
+                if (isset($onlySource) && $onlySource) {
+                    $context = array_merge(
+                        [
+                            AbstractNormalizer::OBJECT_TO_POPULATE => $objectToPopulate,
+                        ],
+                        $context
+                    );
+                }
             }
 
-            if ($object && !array_key_exists($type . $source->getUniqueId(), $this->cache)) {
-                $this->cache[$type . $source->getUniqueId()] = $object;
-            }
-
-            return $object;
+            return $this->normalizer->denormalize($data, $type, $format, $context);
         } else if (is_array($data) && array_key_exists('id', $data) && $data['id']) {
             $object = $this->registry->getRepository($type)->find($data['id']);
 
@@ -131,16 +135,10 @@ class SharedEntityDenormalizer implements DenormalizerInterface
 
     private function getEntityFromSource($entityName, Source $source)
     {
-        $object = $this->sharedEntityService->getEntityFromSource(
+        return $this->sharedEntityService->getEntityFromSource(
             $entityName,
             $source
         );
-
-        if (!$object && array_key_exists($entityName . $source->getUniqueId(), $this->cache)) {
-            $object = $this->cache[$entityName . $source->getUniqueId()];
-        }
-
-        return $object;
     }
 
     /**
