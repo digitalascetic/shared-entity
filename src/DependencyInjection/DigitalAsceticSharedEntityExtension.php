@@ -56,7 +56,7 @@ class DigitalAsceticSharedEntityExtension extends Extension implements PrependEx
             $deNormServ->addArgument(new Reference('serializer.normalizer.object'));
             $deNormServ->addArgument(new Reference('doctrine'));
             $deNormServ->addArgument(new Reference('logger'));
-            $deNormServ->addTag('serializer.normalizer');
+            $deNormServ->addTag('serializer.normalizer', ['priority' => 500]);
             $container->setDefinition('digital_ascetic.shared_entity.serializer.denormalizer', $deNormServ);
         }
     }

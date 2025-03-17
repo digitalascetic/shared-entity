@@ -6,7 +6,7 @@ use DigitalAscetic\SharedEntityBundle\Entity\BaseSharedEntity;
 use DigitalAscetic\SharedEntityBundle\Entity\SharedEntity;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
-use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\PostPersistEventArgs;
 use Doctrine\ORM\Events;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -71,9 +71,9 @@ class SharedEntityDoctrineSubscriber implements EventSubscriber
     }
 
     /**
-     * @param LifecycleEventArgs $args
+     * @param PostPersistEventArgs $args
      */
-    public function postPersist(LifecycleEventArgs $args)
+    public function postPersist(PostPersistEventArgs $args)
     {
 
         /** @var SharedEntity $entity */

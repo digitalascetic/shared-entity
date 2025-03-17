@@ -1,5 +1,10 @@
 # CHANGELOG
 
+6.2.9
+-----
+* Higher prirority for SharedEntityDenormalizer.
+* Instantiate object if not exists.
+
 6.2.8
 -----
 * (SharedEntitySubscriber) Replaced persist entity using EntityManager by a DQL update query.

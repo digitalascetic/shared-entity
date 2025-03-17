@@ -5,6 +5,7 @@ namespace DigitalAscetic\SharedEntityBundle\Serializer\Normalizer;
 use DigitalAscetic\SharedEntityBundle\Entity\SharedEntity;
 use DigitalAscetic\SharedEntityBundle\Entity\Source;
 use DigitalAscetic\SharedEntityBundle\Service\SharedEntityService;
+use Doctrine\Instantiator\Instantiator;
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
@@ -77,13 +78,13 @@ class SharedEntityDenormalizer implements DenormalizerInterface
                     ],
                     $context
                 );
-            }
 
-            if (array_key_exists($type . $source->getUniqueId(), $this->cache)) {
-                return $object;
-            }
+                $object = $this->normalizer->denormalize($data, $type, $format, $context);
 
-            $object = $this->normalizer->denormalize($data, $type, $format, $context);
+            } else {
+                $instantiator = new Instantiator();
+                $object = $instantiator->instantiate($type);
+            }
 
             if ($object && !array_key_exists($type . $source->getUniqueId(), $this->cache)) {
                 $this->cache[$type . $source->getUniqueId()] = $object;
